@@ -1,0 +1,4 @@
+id,city,electricity_type,electricity_price,date
+1,New York,Residential,0.12,2025-04-01
+2,Los Angeles,Commercial,0.15,2025-04-01
+3,San Francisco,Industrial,0.20,2025-04-01
