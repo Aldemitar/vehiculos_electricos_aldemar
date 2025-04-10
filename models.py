@@ -36,3 +36,7 @@ class UpdateElectricityPrice(BaseModel):
     electricity_type: Optional[str] = None
     electricity_price: Optional[float] = None
     date: Optional[str] = None
+
+class DeleteElectricityPrice(BaseModel):
+    city: str
+    electricity_type: str

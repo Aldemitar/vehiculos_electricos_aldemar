@@ -187,10 +187,13 @@ def delete_electricity_price(city: str, electricity_type: str):
     if len(updated_prices) == len(prices):
         return None
 
+    for index, price in enumerate(updated_prices, start=1):
+        price.id = index
+
     with open(ELECTRICITY_PRICE_DATABASE_FILENAME, mode="w", newline="") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=electricity_price_column_fields)
         writer.writeheader()
         for price in updated_prices:
             writer.writerow(price.dict())
 
-    return {"city": city, "electricity_type": electricity_type}
+    return DeleteElectricityPrice(city=city,electricity_type=electricity_type)
