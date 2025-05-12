@@ -2,6 +2,7 @@ from sqlalchemy.future import select
 from data.models import Vehiculo
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
+from data.enums import MarcaVehiculo
 
 async def crear_vehiculo_db(vehiculo_create, session: AsyncSession):
     vehiculo = Vehiculo(**vehiculo_create.dict())
@@ -25,3 +26,8 @@ async def eliminar_vehiculo_db(vehiculo_id: int, session: AsyncSession):
     await session.delete(vehiculo)
     await session.commit()
     return {"mensaje": f"Vehículo con ID {vehiculo_id} eliminado correctamente."}
+
+async def filtrar_vehiculos_por_marca_db(marca: MarcaVehiculo, session: AsyncSession):
+    result = await session.execute(select(Vehiculo).where(Vehiculo.marca == marca))
+    vehiculos = result.scalars().all()
+    return vehiculos
