@@ -60,3 +60,8 @@ async def crear_bateria_db(bateria_create: BateriaCreateForm, session: AsyncSess
     await session.commit()
     await session.refresh(bateria)
     return bateria
+
+async def obtener_baterias_db(session: AsyncSession):
+    result = await session.execute(select(Bateria))
+    baterias = result.scalars().all()
+    return baterias
