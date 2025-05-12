@@ -19,7 +19,8 @@ from operations.operations_db import (
     filtrar_vehiculos_por_marca_db,
     actualizar_vehiculo_db_form,
     crear_bateria_db,
-    obtener_baterias_db
+    obtener_baterias_db,
+    eliminar_bateria_db
 )
 
 @asynccontextmanager
@@ -72,3 +73,7 @@ async def crear_bateria(bateria_create: BateriaCreateForm = Depends(), session: 
 @app.get("/baterias", response_model=List[BateriaRead], tags=["Baterías"])
 async def listar_baterias(session: AsyncSession = Depends(get_session)):
     return await obtener_baterias_db(session)
+
+@app.delete("/baterias/{bateria_id}", tags=["Baterías"])
+async def eliminar_bateria(bateria_id: int, session: AsyncSession = Depends(get_session)):
+    return await eliminar_bateria_db(bateria_id, session)
