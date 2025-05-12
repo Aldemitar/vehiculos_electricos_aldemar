@@ -89,3 +89,19 @@ async def actualizar_bateria_db(bateria_id: int, bateria_data, session: AsyncSes
     await session.commit()
     await session.refresh(bateria)
     return bateria
+
+async def asociar_bateria_a_vehiculo_db(bateria_id: int, vehiculo_id: int, session: AsyncSession):
+    result_bateria = await session.execute(select(Bateria).where(Bateria.id == bateria_id))
+    bateria = result_bateria.scalar_one_or_none()
+    if not bateria:
+        raise HTTPException(status_code=404, detail="Batería no encontrada")
+
+    result_vehiculo = await session.execute(select(Vehiculo).where(Vehiculo.id == vehiculo_id))
+    vehiculo = result_vehiculo.scalar_one_or_none()
+    if not vehiculo:
+        raise HTTPException(status_code=404, detail="Vehículo no encontrado")
+
+    bateria.vehiculo_id = vehiculo_id
+    await session.commit()
+    await session.refresh(bateria)
+    return bateria
