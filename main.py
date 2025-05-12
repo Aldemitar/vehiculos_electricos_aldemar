@@ -1,15 +1,22 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends, HTTPException, status
+
 from utils.connection_db import init_db, get_session
+
 from data.models import Vehiculo
 from data.schemas import VehiculoCreateForm, VehiculoRead, VehiculoCreate
+from data.enums import MarcaVehiculo
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
+
 from typing import List
+
 from operations.operations_db import (
     crear_vehiculo_db,
     obtener_vehiculos_db,
-    eliminar_vehiculo_db
+    eliminar_vehiculo_db,
+    filtrar_vehiculos_por_marca_db
 )
 
 @asynccontextmanager
@@ -42,3 +49,7 @@ async def listar_vehiculos(session: AsyncSession = Depends(get_session)):
 @app.delete("/vehiculos/{vehiculo_id}", tags=["Vehículos"])
 async def eliminar_vehiculo(vehiculo_id: int, session: AsyncSession = Depends(get_session)):
     return await eliminar_vehiculo_db(vehiculo_id, session)
+
+@app.get("/vehiculos/marca/{marca}", response_model=List[VehiculoRead], tags=["Vehículos"])
+async def filtrar_por_marca(marca: MarcaVehiculo, session: AsyncSession = Depends(get_session)):
+    return await filtrar_vehiculos_por_marca_db(marca, session)
