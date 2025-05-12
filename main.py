@@ -3,8 +3,8 @@ from fastapi import FastAPI, Depends, HTTPException, status
 
 from utils.connection_db import init_db, get_session
 
-from data.models import Vehiculo
-from data.schemas import VehiculoCreateForm, VehiculoRead, VehiculoCreate, VehiculoUpdateForm
+from data.models import Vehiculo, Bateria
+from data.schemas import VehiculoCreateForm, VehiculoRead, VehiculoCreate, VehiculoUpdateForm, BateriaCreateForm, BateriaRead
 from data.enums import MarcaVehiculo
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -17,7 +17,8 @@ from operations.operations_db import (
     obtener_vehiculos_db,
     eliminar_vehiculo_db,
     filtrar_vehiculos_por_marca_db,
-    actualizar_vehiculo_db_form
+    actualizar_vehiculo_db_form,
+    crear_bateria_db
 )
 
 @asynccontextmanager
@@ -62,3 +63,7 @@ async def actualizar_vehiculo_formulario(
     session: AsyncSession = Depends(get_session)
 ):
     return await actualizar_vehiculo_db_form(vehiculo_id, vehiculo_update, session)
+
+@app.post("/baterias", response_model=BateriaRead, status_code=status.HTTP_201_CREATED, tags=["Baterías"])
+async def crear_bateria(bateria_create: BateriaCreateForm = Depends(), session: AsyncSession = Depends(get_session)):
+    return await crear_bateria_db(bateria_create, session)
