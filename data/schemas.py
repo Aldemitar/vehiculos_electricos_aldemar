@@ -37,3 +37,27 @@ class VehiculoUpdateForm:
         self.marca = marca
         self.modelo = modelo
         self.año = año
+
+class BateriaRead(BaseModel):
+    id: int
+    capacidad_kWh: float
+    estado_salud: float
+    ciclos_carga: int
+    temperatura_operacion: Optional[float]
+    vehiculo_id: Optional[int]
+
+    class Config:
+        orm_mode = True
+
+class BateriaCreateForm:
+    def __init__(
+        self,
+        capacidad_kWh: float = Form(...),
+        estado_salud: float = Form(...),
+        ciclos_carga: int = Form(...),
+        temperatura_operacion: Optional[float] = Form(None),
+    ):
+        self.capacidad_kWh = capacidad_kWh
+        self.estado_salud = estado_salud
+        self.ciclos_carga = ciclos_carga
+        self.temperatura_operacion = temperatura_operacion
