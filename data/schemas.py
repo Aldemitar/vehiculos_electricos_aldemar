@@ -7,6 +7,9 @@ class VehiculoBase(BaseModel):
     modelo: str
     año: int
 
+class VehiculoCreate(VehiculoBase):
+    pass
+
 class VehiculoCreateForm:
     def __init__(
         self,
