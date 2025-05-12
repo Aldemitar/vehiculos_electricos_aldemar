@@ -1,8 +1,11 @@
-from sqlalchemy.future import select
-from data.models import Vehiculo
 from fastapi import HTTPException, status
+
+from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from data.enums import MarcaVehiculo
+from data.models import Vehiculo
+from data.schemas import VehiculoUpdateForm
 
 async def crear_vehiculo_db(vehiculo_create, session: AsyncSession):
     vehiculo = Vehiculo(**vehiculo_create.dict())
@@ -31,3 +34,22 @@ async def filtrar_vehiculos_por_marca_db(marca: MarcaVehiculo, session: AsyncSes
     result = await session.execute(select(Vehiculo).where(Vehiculo.marca == marca))
     vehiculos = result.scalars().all()
     return vehiculos
+
+async def actualizar_vehiculo_db_form(vehiculo_id: int, vehiculo_update: VehiculoUpdateForm, session: AsyncSession):
+    result = await session.execute(select(Vehiculo).where(Vehiculo.id == vehiculo_id))
+    vehiculo = result.scalar_one_or_none()
+    if vehiculo is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vehículo no encontrado.")
+    update_data = {
+        "marca": vehiculo_update.marca,
+        "modelo": vehiculo_update.modelo,
+        "año": vehiculo_update.año
+    }
+    for key, value in update_data.items():
+        if value is not None:
+            setattr(vehiculo, key, value)
+
+    session.add(vehiculo)
+    await session.commit()
+    await session.refresh(vehiculo)
+    return vehiculo
