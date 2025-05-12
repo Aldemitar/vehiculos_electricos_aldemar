@@ -124,3 +124,13 @@ async def obtener_dashboard_metricas(session: AsyncSession):
         "baterias_en_mal_estado": baterias_mal_estado,
         "porcentaje_mal_estado": round(porcentaje_mal_estado, 2)
     }
+
+async def obtener_vehiculos_con_bateria(session: AsyncSession):
+    query = select(Vehiculo).where(Vehiculo.bateria != None)
+    result = await session.execute(query)
+    return result.scalars().all()
+
+async def obtener_vehiculos_sin_bateria(session: AsyncSession):
+    query = select(Vehiculo).where(Vehiculo.bateria == None)
+    result = await session.execute(query)
+    return result.scalars().all()
