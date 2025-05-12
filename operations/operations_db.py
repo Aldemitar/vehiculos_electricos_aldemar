@@ -65,3 +65,14 @@ async def obtener_baterias_db(session: AsyncSession):
     result = await session.execute(select(Bateria))
     baterias = result.scalars().all()
     return baterias
+
+async def eliminar_bateria_db(bateria_id: int, session: AsyncSession):
+    result = await session.execute(select(Bateria).where(Bateria.id == bateria_id))
+    bateria = result.scalar_one_or_none()
+
+    if bateria is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Batería no encontrada.")
+
+    await session.delete(bateria)
+    await session.commit()
+    return {"mensaje": f"Batería con ID {bateria_id} eliminada correctamente."}
