@@ -1,4 +1,0 @@
-id,brand,model,year,battery_capacity_kwh,range_km,charger_type
-1,Tesla,Model S,2022,100,370,Supercharger
-2,Nissan,Leaf,2021,62,225,CHAdeMO
-3,Chevrolet,Bolt EV,2023,66,259,DC Fast Charging
