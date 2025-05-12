@@ -21,7 +21,8 @@ from operations.operations_db import (
     crear_bateria_db,
     obtener_baterias_db,
     eliminar_bateria_db,
-    actualizar_bateria_db
+    actualizar_bateria_db,
+    asociar_bateria_a_vehiculo_db
 )
 
 @asynccontextmanager
@@ -86,3 +87,11 @@ async def actualizar_bateria(
     session: AsyncSession = Depends(get_session),
 ):
     return await actualizar_bateria_db(bateria_id, bateria_update, session)
+
+@app.post("/baterias/{bateria_id}/asociar", response_model=BateriaRead, tags=["Operaciones vehículo-Batería"])
+async def asociar_bateria_a_vehiculo(
+    bateria_id: int,
+    vehiculo_id: int = Form(...),
+    session: AsyncSession = Depends(get_session),
+):
+    return await asociar_bateria_a_vehiculo_db(bateria_id, vehiculo_id, session)
