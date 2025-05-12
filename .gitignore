@@ -1,0 +1,11 @@
+.env
+
+# Archivo del entorno virtual
+venv/
+
+# Archivos de ejecución
+__pycache__/
+utils/__pycache__/
+data/__pycache__/
+operations/__pycache__/
+data/__pycache__/
