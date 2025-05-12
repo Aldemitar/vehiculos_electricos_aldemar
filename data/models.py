@@ -2,6 +2,7 @@ from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional
 from data.enums import MarcaVehiculo
 from pydantic import validator
+from datetime import date
 
 class Vehiculo(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -14,8 +15,10 @@ class Bateria(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     capacidad_kWh: float
     estado_salud: float = Field(gt=0, le=100, description="Porcentaje entre 0 y 100")
-    vehiculo_id: Optional[int] = Field(default=None, foreign_key="vehiculo.id")
+    ciclos_carga: Optional[int] = Field(default=0, ge=0)
+    temperatura_operacion: Optional[float] = Field(default=None, description="Temperatura en grados Celsius")
 
+    vehiculo_id: Optional[int] = Field(default=None, foreign_key="vehiculo.id")
     vehiculo: Optional[Vehiculo] = Relationship(back_populates="bateria")
 
     @validator("estado_salud")
