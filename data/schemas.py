@@ -61,3 +61,24 @@ class BateriaCreateForm:
         self.estado_salud = estado_salud
         self.ciclos_carga = ciclos_carga
         self.temperatura_operacion = temperatura_operacion
+
+
+class BateriaUpdateForm:
+    def __init__(
+        self,
+        capacidad_kWh: Optional[float] = Form(None),
+        estado_salud: Optional[float] = Form(None),
+        ciclos_carga: Optional[int] = Form(None),
+        temperatura_operacion: Optional[float] = Form(None),
+        vehiculo_id: Optional[int] = Form(None),
+    ):
+        self.capacidad_kWh = capacidad_kWh
+        self.estado_salud = estado_salud
+        self.ciclos_carga = ciclos_carga
+        self.temperatura_operacion = temperatura_operacion
+        self.vehiculo_id = vehiculo_id
+
+    def dict(self):
+        return {
+            k: v for k, v in self.__dict__.items() if v is not None
+        }
