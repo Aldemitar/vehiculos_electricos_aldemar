@@ -4,7 +4,7 @@ from fastapi import FastAPI, Depends, HTTPException, status
 from utils.connection_db import init_db, get_session
 
 from data.models import Vehiculo
-from data.schemas import VehiculoCreateForm, VehiculoRead, VehiculoCreate
+from data.schemas import VehiculoCreateForm, VehiculoRead, VehiculoCreate, VehiculoUpdateForm
 from data.enums import MarcaVehiculo
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -16,7 +16,8 @@ from operations.operations_db import (
     crear_vehiculo_db,
     obtener_vehiculos_db,
     eliminar_vehiculo_db,
-    filtrar_vehiculos_por_marca_db
+    filtrar_vehiculos_por_marca_db,
+    actualizar_vehiculo_db_form
 )
 
 @asynccontextmanager
@@ -53,3 +54,11 @@ async def eliminar_vehiculo(vehiculo_id: int, session: AsyncSession = Depends(ge
 @app.get("/vehiculos/marca/{marca}", response_model=List[VehiculoRead], tags=["Vehículos"])
 async def filtrar_por_marca(marca: MarcaVehiculo, session: AsyncSession = Depends(get_session)):
     return await filtrar_vehiculos_por_marca_db(marca, session)
+
+@app.patch("/vehiculos/{vehiculo_id}/form", response_model=VehiculoRead, tags=["Vehículos"])
+async def actualizar_vehiculo_formulario(
+    vehiculo_id: int,
+    vehiculo_update: VehiculoUpdateForm = Depends(),
+    session: AsyncSession = Depends(get_session)
+):
+    return await actualizar_vehiculo_db_form(vehiculo_id, vehiculo_update, session)
