@@ -7,7 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 from typing import List
 from operations.operations_db import (
-    crear_vehiculo_db
+    crear_vehiculo_db,
+    obtener_vehiculos_db
 )
 
 @asynccontextmanager
@@ -32,3 +33,7 @@ async def crear_vehiculo_formulario(
         año=vehiculo_form.año
     )
     return await crear_vehiculo_db(vehiculo_create, session)
+
+@app.get("/vehiculos", response_model=List[VehiculoRead], tags=["Vehículos"])
+async def listar_vehiculos(session: AsyncSession = Depends(get_session)):
+    return await obtener_vehiculos_db(session)
