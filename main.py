@@ -4,7 +4,7 @@ from fastapi import FastAPI, Depends, HTTPException, status
 from utils.connection_db import init_db, get_session
 
 from data.models import Vehiculo, Bateria
-from data.schemas import VehiculoCreateForm, VehiculoRead, VehiculoCreate, VehiculoUpdateForm, BateriaCreateForm, BateriaRead
+from data.schemas import VehiculoCreateForm, VehiculoRead, VehiculoCreate, VehiculoUpdateForm, BateriaCreateForm, BateriaRead, BateriaUpdateForm
 from data.enums import MarcaVehiculo
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -20,7 +20,8 @@ from operations.operations_db import (
     actualizar_vehiculo_db_form,
     crear_bateria_db,
     obtener_baterias_db,
-    eliminar_bateria_db
+    eliminar_bateria_db,
+    actualizar_bateria_db
 )
 
 @asynccontextmanager
@@ -77,3 +78,11 @@ async def listar_baterias(session: AsyncSession = Depends(get_session)):
 @app.delete("/baterias/{bateria_id}", tags=["Baterías"])
 async def eliminar_bateria(bateria_id: int, session: AsyncSession = Depends(get_session)):
     return await eliminar_bateria_db(bateria_id, session)
+
+@app.patch("/baterias/{bateria_id}", response_model=BateriaRead, tags=["Baterías"])
+async def actualizar_bateria(
+    bateria_id: int,
+    bateria_update: BateriaUpdateForm = Depends(),
+    session: AsyncSession = Depends(get_session),
+):
+    return await actualizar_bateria_db(bateria_id, bateria_update, session)
