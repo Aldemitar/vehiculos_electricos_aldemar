@@ -8,3 +8,8 @@ async def crear_vehiculo_db(vehiculo_create, session: AsyncSession):
     await session.commit()
     await session.refresh(vehiculo) 
     return vehiculo
+
+async def obtener_vehiculos_db(session: AsyncSession):
+    result = await session.execute(select(Vehiculo))
+    vehiculos = result.scalars().all()
+    return vehiculos
