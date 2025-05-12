@@ -23,7 +23,9 @@ from operations.operations_db import (
     eliminar_bateria_db,
     actualizar_bateria_db,
     asociar_bateria_a_vehiculo_db,
-    obtener_dashboard_metricas
+    obtener_dashboard_metricas,
+    obtener_vehiculos_con_bateria,
+    obtener_vehiculos_sin_bateria
 )
 
 @asynccontextmanager
@@ -100,3 +102,11 @@ async def asociar_bateria_a_vehiculo(
 @app.get("/dashboard", tags=["Operaciones vehículo-Batería"])
 async def dashboard_metrica(session: AsyncSession = Depends(get_session)):
     return await obtener_dashboard_metricas(session)
+
+@app.get("/vehiculos/con-bateria", response_model=List[VehiculoRead], tags=["Vehículos"])
+async def listar_vehiculos_con_bateria(session: AsyncSession = Depends(get_session)):
+    return await obtener_vehiculos_con_bateria(session)
+
+@app.get("/vehiculos/sin-bateria", response_model=List[VehiculoRead], tags=["Vehículos"])
+async def listar_vehiculos_sin_bateria(session: AsyncSession = Depends(get_session)):
+    return await obtener_vehiculos_sin_bateria(session)
