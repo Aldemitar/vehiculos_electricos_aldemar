@@ -1,6 +1,6 @@
 from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional
-from enums import MarcaVehiculo
+from data.enums import MarcaVehiculo
 from pydantic import validator
 
 class Vehiculo(SQLModel, table=True):
