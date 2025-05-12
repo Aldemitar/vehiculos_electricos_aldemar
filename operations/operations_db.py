@@ -4,8 +4,8 @@ from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from data.enums import MarcaVehiculo
-from data.models import Vehiculo
-from data.schemas import VehiculoUpdateForm
+from data.models import Vehiculo, Bateria
+from data.schemas import VehiculoUpdateForm, BateriaCreateForm
 
 async def crear_vehiculo_db(vehiculo_create, session: AsyncSession):
     vehiculo = Vehiculo(**vehiculo_create.dict())
@@ -53,3 +53,10 @@ async def actualizar_vehiculo_db_form(vehiculo_id: int, vehiculo_update: Vehicul
     await session.commit()
     await session.refresh(vehiculo)
     return vehiculo
+
+async def crear_bateria_db(bateria_create: BateriaCreateForm, session: AsyncSession):
+    bateria = Bateria(**bateria_create.__dict__)
+    session.add(bateria)
+    await session.commit()
+    await session.refresh(bateria)
+    return bateria
