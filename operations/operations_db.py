@@ -1,5 +1,6 @@
 from fastapi import HTTPException, status
 
+from sqlalchemy import func
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -105,3 +106,21 @@ async def asociar_bateria_a_vehiculo_db(bateria_id: int, vehiculo_id: int, sessi
     await session.commit()
     await session.refresh(bateria)
     return bateria
+
+async def obtener_dashboard_metricas(session: AsyncSession):
+    total_vehiculos = await session.scalar(select(func.count(Vehiculo.id)))
+    total_baterias = await session.scalar(select(func.count(Bateria.id)))
+    baterias_mal_estado = await session.scalar(
+        select(func.count(Bateria.id)).where(Bateria.estado_salud < 30)
+    )
+
+    porcentaje_mal_estado = (
+        (baterias_mal_estado / total_baterias * 100) if total_baterias else 0
+    )
+
+    return {
+        "total_vehiculos": total_vehiculos,
+        "total_baterias": total_baterias,
+        "baterias_en_mal_estado": baterias_mal_estado,
+        "porcentaje_mal_estado": round(porcentaje_mal_estado, 2)
+    }
