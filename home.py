@@ -77,6 +77,11 @@ async def submit_vehiculo_form(
 async def eliminar_vehiculo(vehiculo_id: int, session: AsyncSession = Depends(get_session)):
     return await eliminar_vehiculo_db(vehiculo_id, session)
 
+@router.post("/vehiculos/delete/{vehiculo_id}", tags=["Vehículos"])
+async def eliminar_vehiculo_form(vehiculo_id: int, session: AsyncSession = Depends(get_session)):
+    await eliminar_vehiculo_db(vehiculo_id, session)
+    return RedirectResponse(url="/vehiculos_registro", status_code=status.HTTP_303_SEE_OTHER)
+
 @router.get("/vehiculos/marca/{marca}", response_model=List[VehiculoRead], tags=["Vehículos"])
 async def filtrar_por_marca(marca: MarcaVehiculo, session: AsyncSession = Depends(get_session)):
     return await filtrar_vehiculos_por_marca_db(marca, session)
