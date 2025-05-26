@@ -7,6 +7,8 @@ import home
 
 app = FastAPI()
 
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 app.include_router(home.router)
 
 templates = Jinja2Templates(directory="templates")
