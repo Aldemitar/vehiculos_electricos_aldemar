@@ -15,6 +15,7 @@ from data.enums import MarcaVehiculo
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.future import select
 
 from typing import List
 
@@ -81,6 +82,35 @@ async def eliminar_vehiculo(vehiculo_id: int, session: AsyncSession = Depends(ge
 async def eliminar_vehiculo_form(vehiculo_id: int, session: AsyncSession = Depends(get_session)):
     await eliminar_vehiculo_db(vehiculo_id, session)
     return RedirectResponse(url="/vehiculos_registro", status_code=status.HTTP_303_SEE_OTHER)
+
+@router.get("/vehiculos/edit/{vehiculo_id}", tags=["Vehículos"])
+async def editar_vehiculo_form(request: Request, vehiculo_id: int, session: AsyncSession = Depends(get_session)):
+    result = await session.execute(select(Vehiculo).where(Vehiculo.id == vehiculo_id))
+    vehiculo = result.scalar_one_or_none()
+    if vehiculo is None:
+        raise HTTPException(status_code=404, detail="Vehículo no encontrado")
+    
+    return templates.TemplateResponse(
+        "edit_vehicle.html", 
+        {
+            "request": request, 
+            "vehiculo": vehiculo,
+            "marcas": MarcaVehiculo
+        }
+    )
+
+@router.post("/vehiculos/update/{vehiculo_id}", tags=["Vehículos"])
+async def actualizar_vehiculo_post(
+    vehiculo_id: int,
+    vehiculo_update: VehiculoUpdateForm = Depends(),
+    session: AsyncSession = Depends(get_session)
+):
+    vehiculo = await actualizar_vehiculo_db_form(vehiculo_id, vehiculo_update, session)
+    return RedirectResponse(url="/vehiculos_registro", status_code=status.HTTP_303_SEE_OTHER)
+
+
+
+
 
 @router.get("/vehiculos/marca/{marca}", response_model=List[VehiculoRead], tags=["Vehículos"])
 async def filtrar_por_marca(marca: MarcaVehiculo, session: AsyncSession = Depends(get_session)):
