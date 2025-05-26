@@ -1,13 +1,67 @@
 {% extends 'base.html' %}
-{% block title %} Inicio - Visualizando {% endblock %}
+{% block title %} Inicio {% endblock %}
 {% block content %}
 
-<h1>Prueba inicio desde FastAPI</h1>
-<p>Este es un párrafo para prueba de HTML.</p>
+<header class="bg-dark text-white py-5">
+    <div class="container text-center">
+        <h1 class="display-3 fw-bold mb-3">Vehículos y Baterías</h1>
+        <p class="lead fs-4 mb-0" style="max-width: 720px; margin: 0 auto;">
+            Descubre los diferentes tipos de vehículos, sus sistemas de energía y consejos clave para mantenerlos siempre en óptimas condiciones.
+        </p>
+    </div>
+</header>
 
-<ul>
-    <li>Primer elemento</li>
-    <li>Segundo elemento</li>
-</ul>
+{% include 'includes/navbar_home.html' %}
+
+<main class="container my-5">
+
+    <section id="tipos" class="mb-5">
+        <h2 class="mb-4" style="border-left: 4px solid #0d6efd; padding-left: 12px; font-weight: 700; font-size: 2rem;">
+            Tipos de Vehículos
+        </h2>
+        <p class="fs-5 mb-4" style="max-width: 720px; color: #444;">
+            Los vehículos varían según su fuente de energía y uso. Aquí te presentamos las categorías más populares:
+        </p>
+
+        <ul class="list-group list-group-flush mb-4">
+            <li class="list-group-item d-flex align-items-center gap-3" style="border:none; padding-left:0; padding-right:0; margin-bottom:1rem; background:none;">
+                <img src="/static/img/Combustión_interna_img.jpg" alt="Vehículos de Combustión Interna" style="width:48px; height:48px; object-fit:contain; flex-shrink:0;">
+                <div>
+                    <strong>Vehículos de Combustión Interna:</strong> Los clásicos que funcionan con gasolina o diésel. Son muy comunes y fáciles de encontrar.
+                </div>
+            </li>
+            <li class="list-group-item d-flex align-items-center gap-3" style="border:none; padding-left:0; padding-right:0; margin-bottom:1rem; background:none;">
+                <img src="/static/img/vehiculos_electricos_img.jpg" alt="Vehículos Eléctricos" style="width:48px; height:48px; object-fit:contain; flex-shrink:0;">
+                <div>
+                    <strong>Vehículos Eléctricos (VE):</strong> Funcionan con motores eléctricos y baterías recargables. Más limpios y eficientes, ideales para cuidar el medio ambiente.
+                </div>
+            </li>
+            <li class="list-group-item d-flex align-items-center gap-3" style="border:none; padding-left:0; padding-right:0; margin-bottom:1rem; background:none;">
+                <img src="/static/img/Vehiculo_hibrido_img.jpg" alt="Vehículos Híbridos" style="width:48px; height:48px; object-fit:contain; flex-shrink:0;">
+                <div>
+                    <strong>Vehículos Híbridos (HEV):</strong> Combinan motor de gasolina y motor eléctrico para optimizar el consumo y reducir emisiones.
+                </div>
+            </li>
+            <li class="list-group-item d-flex align-items-center gap-3" style="border:none; padding-left:0; padding-right:0; margin-bottom:1rem; background:none;">
+                <img src="/static/img/Hibrido_enchufable_img.jpg" alt="Vehículos Híbridos Enchufables" style="width:48px; height:48px; object-fit:contain; flex-shrink:0;">
+                <div>
+                    <strong>Vehículos Híbridos Enchufables (PHEV):</strong> Similares a los híbridos, pero permiten recargar la batería conectándolos a la red eléctrica para recorrer más kilómetros en modo eléctrico.
+                </div>
+            </li>
+            <li class="list-group-item d-flex align-items-center gap-3" style="border:none; padding-left:0; padding-right:0; margin-bottom:1rem; background:none;">
+                <img src="/static/img/vehículo_hidrógeno_img.jpg" alt="Vehículos de Hidrógeno" style="width:48px; height:48px; object-fit:contain; flex-shrink:0;">
+                <div>
+                    <strong>Vehículos de Hidrógeno (FCEV):</strong> Utilizan hidrógeno para producir electricidad, sin emisiones contaminantes, solo vapor de agua.
+                </div>
+            </li>
+        </ul>
+
+        <figure class="figure text-center">
+            <img src="/static/img/Tipos_vehiculos_img.jpg" alt="Tipos de Vehículos" class="img-fluid rounded shadow-sm">
+            <figcaption class="figure-caption mt-2 text-muted">Diversos tipos de vehículos según su fuente de energía.</figcaption>
+        </figure>
+    </section>
+
+</main>
 
 {% endblock %}
