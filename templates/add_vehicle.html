@@ -2,25 +2,44 @@
 {% block title %} {{ titulo }} {% endblock %}
 {% block content %}
 
-<h2>Crear nuevo vehículo</h2>
-<form method="post" action="/vehiculos/add">
-    <label>Marca:
-        <select name="marca" required>
-            {% for marca in marcas %}
-            <option value="{{ marca.value }}">{{ marca.value }}</option>
-            {% endfor %}
-        </select>
-    </label><br>
+    <header class="bg-dark text-white py-5">
+        <div class="container text-center">
+            <h1 class="display-3 fw-bold mb-3">Creación de vehículo</h1>
+        </div>
+    </header>
 
-    <label>Modelo: 
-        <input type="text" name="modelo" required>
-    </label><br>
+    <div class="container my-5">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="card-title mb-4 text-primary text-center">Añadir Nuevo Vehículo</h2>
 
-    <label>Año:
-        <input type="number" name="año" min="1900" max="2100" required>
-    </label><br>
+                <form method="post" action="/vehiculos/add">
+                    <div class="mb-3">
+                        <label for="marca" class="form-label">Marca</label>
+                        <select name="marca" id="marca" class="form-select" required>
+                            {% for marca in marcas %}
+                                <option value="{{ marca.value }}">{{ marca.value }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
 
-    <button type="submit">Crear vehículo</button>
-</form>
+                    <div class="mb-3">
+                        <label for="modelo" class="form-label">Modelo</label>
+                        <input type="text" id="modelo" name="modelo" class="form-control" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="año" class="form-label">Año</label>
+                        <input type="number" id="año" name="año" class="form-control" min="1900" max="2100" required>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-primary">Crear Vehículo</button>
+                        <a href="/vehiculos_registro" class="btn btn-outline-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
 {% endblock %}
