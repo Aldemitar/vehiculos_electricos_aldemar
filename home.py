@@ -17,7 +17,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.future import select
 
-from typing import List
+from typing import List, Optional
 
 from operations.operations_db import (
     crear_vehiculo_db,
@@ -108,6 +108,18 @@ async def actualizar_vehiculo_post(
     vehiculo = await actualizar_vehiculo_db_form(vehiculo_id, vehiculo_update, session)
     return RedirectResponse(url="/vehiculos_registro", status_code=status.HTTP_303_SEE_OTHER)
 
+@router.get("/vehiculos/marca", response_model=List[VehiculoRead], tags=["Vehículos"])
+async def filtrar_por_marca(marca: Optional[MarcaVehiculo] = None, session: AsyncSession = Depends(get_session)):
+    if marca:
+        return await filtrar_vehiculos_por_marca_db(marca, session)
+    else:
+        # Devuelve todos si no hay filtro
+        result = await session.execute(select(Vehiculo))
+        return result.scalars().all()
+
+
+
+
 
 
 
@@ -115,14 +127,6 @@ async def actualizar_vehiculo_post(
 @router.get("/vehiculos/marca/{marca}", response_model=List[VehiculoRead], tags=["Vehículos"])
 async def filtrar_por_marca(marca: MarcaVehiculo, session: AsyncSession = Depends(get_session)):
     return await filtrar_vehiculos_por_marca_db(marca, session)
-
-@router.patch("/vehiculos/{vehiculo_id}/form", response_model=VehiculoRead, tags=["Vehículos"])
-async def actualizar_vehiculo_formulario(
-    vehiculo_id: int,
-    vehiculo_update: VehiculoUpdateForm = Depends(),
-    session: AsyncSession = Depends(get_session)
-):
-    return await actualizar_vehiculo_db_form(vehiculo_id, vehiculo_update, session)
 
 @router.post("/baterias", response_model=BateriaRead, status_code=status.HTTP_201_CREATED, tags=["Baterías"])
 async def crear_bateria(bateria_create: BateriaCreateForm = Depends(), session: AsyncSession = Depends(get_session)):
