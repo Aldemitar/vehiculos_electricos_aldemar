@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %} {{ titulo }} {% endblock %}
+{% block content %}
+
+<h2>Crear nuevo vehículo</h2>
+<form method="post" action="/vehiculos/add">
+    <label>Marca:
+        <select name="marca" required>
+            {% for marca in marcas %}
+            <option value="{{ marca.value }}">{{ marca.value }}</option>
+            {% endfor %}
+        </select>
+    </label><br>
+
+    <label>Modelo: 
+        <input type="text" name="modelo" required>
+    </label><br>
+
+    <label>Año:
+        <input type="number" name="año" min="1900" max="2100" required>
+    </label><br>
+
+    <button type="submit">Crear vehículo</button>
+</form>
+
+{% endblock %}
