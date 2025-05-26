@@ -9,6 +9,8 @@
     </header>
     <br>
 
+    <br>
+
     <div class="container">
         <div class="table-responsive">
             <table class="table table-striped table-hover table-bordered align-middle shadow-sm">
@@ -18,6 +20,7 @@
                         <th>Marca</th>
                         <th>Modelo</th>
                         <th>Año</th>
+                        <th>Acciones</th> <!-- Nueva columna -->
                     </tr>
                 </thead>
                 <tbody class="text-center">
@@ -27,11 +30,19 @@
                         <td>{{ vehiculo.marca.value }}</td>
                         <td>{{ vehiculo.modelo }}</td>
                         <td>{{ vehiculo.año }}</td>
+                        <td>
+                            <form action="/vehiculos/delete/{{ vehiculo.id }}" method="POST" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este vehículo?');">
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="bi bi-trash"></i> Eliminar
+                                </button>
+                            </form>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
+
         <div class="mb-4 text-muted">
             <a href="/vehiculos/add" class="btn btn-primary">
                 <i class="bi bi-plus-lg"></i> Agregar Vehículo
