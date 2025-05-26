@@ -20,7 +20,7 @@
                         <th>Marca</th>
                         <th>Modelo</th>
                         <th>Año</th>
-                        <th>Acciones</th> <!-- Nueva columna -->
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody class="text-center">
@@ -31,7 +31,10 @@
                         <td>{{ vehiculo.modelo }}</td>
                         <td>{{ vehiculo.año }}</td>
                         <td>
-                            <form action="/vehiculos/delete/{{ vehiculo.id }}" method="POST" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este vehículo?');">
+                            <a href="/vehiculos/edit/{{ vehiculo.id }}" class="btn btn-warning btn-sm">
+                                <i class="bi bi-pencil"></i> Actualizar
+                            </a>
+                            <form action="/vehiculos/delete/{{ vehiculo.id }}" method="POST" style="display:inline;" onsubmit="return confirm('¿Estás seguro de eliminar este vehículo?');">
                                 <button type="submit" class="btn btn-danger btn-sm">
                                     <i class="bi bi-trash"></i> Eliminar
                                 </button>
@@ -43,7 +46,7 @@
             </table>
         </div>
 
-        <div class="mb-4 text-muted">
+        <div class="mb-4 text-center">
             <a href="/vehiculos/add" class="btn btn-primary">
                 <i class="bi bi-plus-lg"></i> Agregar Vehículo
             </a>
