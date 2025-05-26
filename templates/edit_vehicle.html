@@ -2,35 +2,47 @@
 {% block title %}Editar Vehículo{% endblock %}
 {% block content %}
 
-<br>
-<div>
-    <h2>Editar Vehículo {{ vehiculo.id }}</h2>
-    <form action="/vehiculos/update/{{ vehiculo.id }}" method="POST">
-        <div>
-            <label for="marca">Marca</label><br>
-            <select id="marca" name="marca" required>
-                {% for marca in marcas %}
-                    <option value="{{ marca.value }}" {% if marca.value == vehiculo.marca.value %}selected{% endif %}>
-                        {{ marca.value }}
-                    </option>
-                {% endfor %}
-            </select>
+    <header class="bg-dark text-white py-5">
+        <div class="container text-center">
+            <h1 class="display-3 fw-bold mb-3">Actualización de vehículo</h1>
         </div>
-        <br>
-        <div>
-            <label for="modelo">Modelo</label><br>
-            <input type="text" id="modelo" name="modelo" value="{{ vehiculo.modelo }}">
+    </header>
+
+    <div class="container my-5">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="card-title mb-4 text-primary text-center">Editar Vehículo con ID #{{ vehiculo.id }}</h2>
+
+                <form action="/vehiculos/update/{{ vehiculo.id }}" method="POST">
+                    <div class="mb-3">
+                        <label for="marca" class="form-label">Marca</label>
+                        <select id="marca" name="marca" class="form-select" required>
+                            {% for marca in marcas %}
+                                <option value="{{ marca.value }}" {% if marca.value == vehiculo.marca.value %}selected{% endif %}>
+                                    {{ marca.value }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="modelo" class="form-label">Modelo</label>
+                        <input type="text" id="modelo" name="modelo" class="form-control" value="{{ vehiculo.modelo }}" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="año" class="form-label">Año</label>
+                        <input type="number" id="año" name="año" class="form-control" value="{{ vehiculo.año }}" required>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-primary">Actualizar</button>
+                        <a href="/vehiculos_registro" class="btn btn-outline-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
         </div>
-        <br>
-        <div>
-            <label for="año">Año</label><br>
-            <input type="number" id="año" name="año" value="{{ vehiculo.año }}">
-        </div>
-        <br>
-        <button type="submit">Actualizar</button>
-        <a href="/vehiculos_registro">Cancelar</a>
-    </form>
-</div>
-<br>
+    </div>
+
 
 {% endblock %}
