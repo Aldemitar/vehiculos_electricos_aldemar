@@ -46,7 +46,7 @@ router = APIRouter(lifespan=lifespan)
 async def read_home(request: Request):
     return templates.TemplateResponse("home.html", {"request": request})
 
-@router.get("/vehiculos_registro.html", response_class=HTMLResponse, tags=["Vehículos"])
+@router.get("/vehiculos_registro", response_class=HTMLResponse, tags=["Vehículos"])
 async def vehiculos_html(request: Request, session: AsyncSession = Depends(get_session)):
     vehiculos = await obtener_vehiculos_db(session)
 
@@ -56,17 +56,22 @@ async def vehiculos_html(request: Request, session: AsyncSession = Depends(get_s
         "titulo": "Vehículos registrados"
     })
 
-@router.post("/vehiculos/form", response_model=VehiculoRead, status_code=status.HTTP_201_CREATED, tags=["Vehículos"])
-async def crear_vehiculo_formulario(
+@router.get("/vehiculos/add", response_class=HTMLResponse, tags=["Vehículos"])
+async def show_vehiculo_form(request: Request):
+    return templates.TemplateResponse("add_vehicle.html", {"request": request, "marcas": list(MarcaVehiculo)})
+
+@router.post("/vehiculos/add", status_code=status.HTTP_303_SEE_OTHER, tags=["Vehículos"])
+async def submit_vehiculo_form(
     vehiculo_form: VehiculoCreateForm = Depends(),
     session: AsyncSession = Depends(get_session)
 ):
     vehiculo_create = VehiculoCreate(
         marca=vehiculo_form.marca,
         modelo=vehiculo_form.modelo,
-        año=vehiculo_form.año
+        año=vehiculo_form.año,
     )
-    return await crear_vehiculo_db(vehiculo_create, session)
+    nuevo_vehiculo = await crear_vehiculo_db(vehiculo_create, session)
+    return RedirectResponse(url="/vehiculos_registro", status_code=status.HTTP_303_SEE_OTHER)
 
 @router.delete("/vehiculos/{vehiculo_id}", tags=["Vehículos"])
 async def eliminar_vehiculo(vehiculo_id: int, session: AsyncSession = Depends(get_session)):
