@@ -2,27 +2,36 @@
 {% block title %} {{ titulo }} - Visualizando {% endblock %}
 {% block content %}
 
-    <h1>{{ titulo }}</h1>
+    <header class="bg-dark text-white py-5">
+        <div class="container text-center">
+            <h1 class="display-3 fw-bold mb-3">{{ titulo }}</h1>
+        </div>
+    </header>
+    <br>
 
-    <table border="1" style="color: rgb(0, 0, 0)">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Marca</th>
-                <th>Modelo</th>
-                <th>Año</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for vehiculo in sesiones %}
-            <tr>
-                <td>{{ vehiculo.id }}</td>
-                <td>{{ vehiculo.marca.value }}</td>  <!-- 👈 Aquí se muestra como "Chevrolet" -->
-                <td>{{ vehiculo.modelo }}</td>
-                <td>{{ vehiculo.año }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
+    <div class="container">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover table-bordered align-middle shadow-sm">
+                <thead class="table-dark text-center">
+                    <tr>
+                        <th>ID</th>
+                        <th>Marca</th>
+                        <th>Modelo</th>
+                        <th>Año</th>
+                    </tr>
+                </thead>
+                <tbody class="text-center">
+                    {% for vehiculo in sesiones %}
+                    <tr>
+                        <td>{{ vehiculo.id }}</td>
+                        <td>{{ vehiculo.marca.value }}</td>
+                        <td>{{ vehiculo.modelo }}</td>
+                        <td>{{ vehiculo.año }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <br>
 {% endblock %}
