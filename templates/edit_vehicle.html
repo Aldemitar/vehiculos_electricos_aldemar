@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Editar Vehículo{% endblock %}
+{% block content %}
+
+<br>
+<div>
+    <h2>Editar Vehículo {{ vehiculo.id }}</h2>
+    <form action="/vehiculos/update/{{ vehiculo.id }}" method="POST">
+        <div>
+            <label for="marca">Marca</label><br>
+            <select id="marca" name="marca" required>
+                {% for marca in marcas %}
+                    <option value="{{ marca.value }}" {% if marca.value == vehiculo.marca.value %}selected{% endif %}>
+                        {{ marca.value }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <br>
+        <div>
+            <label for="modelo">Modelo</label><br>
+            <input type="text" id="modelo" name="modelo" value="{{ vehiculo.modelo }}">
+        </div>
+        <br>
+        <div>
+            <label for="año">Año</label><br>
+            <input type="number" id="año" name="año" value="{{ vehiculo.año }}">
+        </div>
+        <br>
+        <button type="submit">Actualizar</button>
+        <a href="/vehiculos_registro">Cancelar</a>
+    </form>
+</div>
+<br>
+
+{% endblock %}
