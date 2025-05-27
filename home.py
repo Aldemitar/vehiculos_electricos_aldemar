@@ -59,7 +59,7 @@ async def vehiculos_html(request: Request, session: AsyncSession = Depends(get_s
 
 @router.get("/vehiculos/add", response_class=HTMLResponse, tags=["Vehículos"])
 async def show_vehiculo_form(request: Request):
-    return templates.TemplateResponse("add_vehicle.html", {"request": request, "marcas": list(MarcaVehiculo)})
+    return templates.TemplateResponse("add_vehicle.html", {"request": request, "marcas": list(MarcaVehiculo), "titulo": "Creación vehículo"})
 
 @router.post("/vehiculos/add", status_code=status.HTTP_303_SEE_OTHER, tags=["Vehículos"])
 async def submit_vehiculo_form(
@@ -138,7 +138,17 @@ async def ver_baterias(request: Request, session: AsyncSession = Depends(get_ses
     baterias = await obtener_baterias_db(session)
     return templates.TemplateResponse("baterias_registro.html", {"request": request, "baterias": baterias, "titulo": "Baterías registradas"})
 
+@router.get("/baterias/add", tags=["Baterías"])
+async def form_agregar_bateria(request: Request):
+    return templates.TemplateResponse("add_bateria.html", {"request": request, "titulo": "Creación Batería"})
 
+@router.post("/baterias/add", tags=["Baterías"])
+async def procesar_formulario_bateria(
+    bateria_form: BateriaCreateForm = Depends(),
+    session: AsyncSession = Depends(get_session)
+):
+    await crear_bateria_db(bateria_form, session)
+    return RedirectResponse(url="/baterias_registro", status_code=status.HTTP_303_SEE_OTHER)
 
 
 
