@@ -108,25 +108,34 @@ async def actualizar_vehiculo_post(
     vehiculo = await actualizar_vehiculo_db_form(vehiculo_id, vehiculo_update, session)
     return RedirectResponse(url="/vehiculos_registro", status_code=status.HTTP_303_SEE_OTHER)
 
-@router.get("/vehiculos/marca", response_model=List[VehiculoRead], tags=["Vehículos"])
-async def filtrar_por_marca(marca: Optional[MarcaVehiculo] = None, session: AsyncSession = Depends(get_session)):
+@router.get("/vehiculos", response_class=HTMLResponse, tags=["Vehículos"])
+async def vista_vehiculos_html(
+    request: Request,
+    marca: Optional[str] = None,
+    session: AsyncSession = Depends(get_session)
+):
     if marca:
-        return await filtrar_vehiculos_por_marca_db(marca, session)
+        try:
+            marca_enum = MarcaVehiculo(marca)  # convertir a Enum si se pasa como string
+            vehiculos = await filtrar_vehiculos_por_marca_db(marca_enum, session)
+            titulo = f"Vehículos - Marca: {marca}"
+        except ValueError:
+            vehiculos = []
+            titulo = "Marca no válida"
     else:
-        # Devuelve todos si no hay filtro
-        result = await session.execute(select(Vehiculo))
-        return result.scalars().all()
+        vehiculos = await obtener_vehiculos_db(session)
+        titulo = "Todos los Vehículos"
+    
+    return templates.TemplateResponse("vehiculos_registro.html", {
+        "request": request,
+        "sesiones": vehiculos,
+        "titulo": titulo,
+        "marca_seleccionada": marca
+    })
 
 
 
 
-
-
-
-
-@router.get("/vehiculos/marca/{marca}", response_model=List[VehiculoRead], tags=["Vehículos"])
-async def filtrar_por_marca(marca: MarcaVehiculo, session: AsyncSession = Depends(get_session)):
-    return await filtrar_vehiculos_por_marca_db(marca, session)
 
 @router.post("/baterias", response_model=BateriaRead, status_code=status.HTTP_201_CREATED, tags=["Baterías"])
 async def crear_bateria(bateria_create: BateriaCreateForm = Depends(), session: AsyncSession = Depends(get_session)):
