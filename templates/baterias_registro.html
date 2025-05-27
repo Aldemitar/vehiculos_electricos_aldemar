@@ -2,42 +2,47 @@
 {% block title %} {{ titulo }} - Visualizando {% endblock %}
 {% block content %}
 
-<header class="bg-dark text-white py-5">
-    <div class="container text-center">
-        <h1 class="display-3 fw-bold mb-3">{{ titulo }}</h1>
-    </div>
-</header>
+    <header class="bg-dark text-white py-5">
+        <div class="container text-center">
+            <h1 class="display-3 fw-bold mb-3">{{ titulo }}</h1>
+        </div>
+    </header>
 
-<br>
+    <br>
 
-<div class="container">
-    <div class="table-responsive mt-4">
-        <table class="table table-striped table-hover table-bordered align-middle shadow-sm">
-            <thead class="table-dark text-center">
-                <tr>
-                    <th>ID</th>
-                    <th>Capacidad (kWh)</th>
-                    <th>Estado de Salud (%)</th>
-                    <th>Ciclos de Carga</th>
-                    <th>Temperatura (°C)</th>
-                    <th>ID Vehículo</th>
-                </tr>
-            </thead>
-            <tbody class="text-center">
-                {% for bateria in baterias %}
-                <tr>
-                    <td>{{ bateria.id }}</td>
-                    <td>{{ bateria.capacidad_kWh }}</td>
-                    <td>{{ bateria.estado_salud }}</td>
-                    <td>{{ bateria.ciclos_carga or 0 }}</td>
-                    <td>{{ bateria.temperatura_operacion if bateria.temperatura_operacion is not none else 'N/A' }}</td>
-                    <td>{{ bateria.vehiculo_id if bateria.vehiculo_id else 'Sin asignar' }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div class="container">
+        <div class="table-responsive mt-4">
+            <table class="table table-striped table-hover table-bordered align-middle shadow-sm">
+                <thead class="table-dark text-center">
+                    <tr>
+                        <th>ID</th>
+                        <th>Capacidad (kWh)</th>
+                        <th>Estado de Salud (%)</th>
+                        <th>Ciclos de Carga</th>
+                        <th>Temperatura (°C)</th>
+                        <th>ID Vehículo</th>
+                    </tr>
+                </thead>
+                <tbody class="text-center">
+                    {% for bateria in baterias %}
+                    <tr>
+                        <td>{{ bateria.id }}</td>
+                        <td>{{ bateria.capacidad_kWh }}</td>
+                        <td>{{ bateria.estado_salud }}</td>
+                        <td>{{ bateria.ciclos_carga or 0 }}</td>
+                        <td>{{ bateria.temperatura_operacion if bateria.temperatura_operacion is not none else 'N/A' }}</td>
+                        <td>{{ bateria.vehiculo_id if bateria.vehiculo_id else 'Sin asignar' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+            <div class="text-center mt-4 mb-4">
+            <a href="/baterias/add" class="btn btn-primary">
+                <i class="bi bi-plus-lg"></i> Agregar Batería
+            </a>
+        </div>
     </div>
-</div>
 
 <br>
 
