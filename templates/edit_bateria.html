@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Actualizar Batería{% endblock %}
+{% block content %}
+
+    <header class="bg-dark text-white py-5">
+        <div class="container text-center">
+            <h1 class="display-3 fw-bold mb-3">Actualización de batería</h1>
+        </div>
+    </header>
+
+    <div class="container my-5">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="card-title mb-4 text-primary text-center">Editar Batería con ID #{{ bateria.id }}</h2>
+
+                <form action="/baterias/update/{{ bateria.id }}" method="POST">
+                    <div class="mb-3">
+                        <label for="capacidad_kWh" class="form-label">Capacidad (kWh)</label>
+                        <input type="number" step="0.1" id="capacidad_kWh" name="capacidad_kWh" class="form-control" value="{{ bateria.capacidad_kWh }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="estado_salud" class="form-label">Estado de Salud (%)</label>
+                        <input type="number" step="0.1" id="estado_salud" name="estado_salud" class="form-control" min="0" max="100" value="{{ bateria.estado_salud }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="ciclos_carga" class="form-label">Ciclos de Carga</label>
+                        <input type="number" id="ciclos_carga" name="ciclos_carga" class="form-control" min="0" value="{{ bateria.ciclos_carga or 0 }}">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="temperatura_operacion" class="form-label">Temperatura de Operación (°C)</label>
+                        <input type="number" step="0.1" id="temperatura_operacion" name="temperatura_operacion" class="form-control" value="{{ bateria.temperatura_operacion }}">
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-primary">Actualizar</button>
+                        <a href="/baterias/view" class="btn btn-outline-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
