@@ -14,7 +14,7 @@
     <div class="container">
         <div class="table-responsive">
             <div class="container mt-4 mb-4">
-                <form method="get" action="/vehiculos/marca" class="d-flex justify-content-center align-items-center">
+                <form method="get" action="/vehiculos" class="d-flex justify-content-center align-items-center">
                     <label for="marca" class="me-2 fw-bold">Filtrar por marca:</label>
                     <select name="marca" id="marca" class="form-select w-auto me-2">
                         <option value="">-- Seleccionar --</option>
@@ -25,9 +25,8 @@
                         <option value="Chevrolet" {% if marca_seleccionada == 'Chevrolet' %}selected{% endif %}>Chevrolet</option>
                     </select>
                     <button type="submit" class="btn btn-secondary me-2">Filtrar</button>
-
                     {% if marca_seleccionada %}
-                        <a href="/vehiculos/marca" class="btn btn-outline-dark">Quitar filtro</a>
+                        <a href="/vehiculos" class="btn btn-outline-dark">Quitar filtro</a>
                     {% endif %}
                 </form>
             </div>
