@@ -186,16 +186,27 @@ async def actualizar_bateria_form(
     await actualizar_bateria_db(bateria_id, bateria_update, session)
     return RedirectResponse(url="/baterias_registro", status_code=303)
 
-
-
-
-@router.patch("/baterias/{bateria_id}", response_model=BateriaRead, tags=["Baterías"])
-async def actualizar_bateria(
-    bateria_id: int,
-    bateria_update: BateriaUpdateForm = Depends(),
+@router.get("/baterias", response_class=HTMLResponse)
+async def mostrar_baterias(
+    request: Request,
     session: AsyncSession = Depends(get_session),
+    asignada: Optional[str] = None
 ):
-    return await actualizar_bateria_db(bateria_id, bateria_update, session)
+    query = select(Bateria)
+    if asignada == "true":
+        query = query.where(Bateria.vehiculo_id.is_not(None))
+    elif asignada == "false":
+        query = query.where(Bateria.vehiculo_id.is_(None))
+
+    result = await session.execute(query)
+    baterias = result.scalars().all()
+
+    return templates.TemplateResponse("baterias_registro.html", {
+        "request": request,
+        "titulo": "Baterías registradas",
+        "baterias": baterias,
+        "asignada": asignada
+    })
 
 @router.post("/baterias/{bateria_id}/asociar", response_model=BateriaRead, tags=["Operaciones vehículo-Batería"])
 async def asociar_bateria_a_vehiculo(
@@ -208,11 +219,3 @@ async def asociar_bateria_a_vehiculo(
 @router.get("/dashboard", tags=["Operaciones vehículo-Batería"])
 async def dashboard_metrica(session: AsyncSession = Depends(get_session)):
     return await obtener_dashboard_metricas(session)
-
-@router.get("/vehiculos/con-bateria", response_model=List[VehiculoRead], tags=["Vehículos"])
-async def listar_vehiculos_con_bateria(session: AsyncSession = Depends(get_session)):
-    return await obtener_vehiculos_con_bateria(session)
-
-@router.get("/vehiculos/sin-bateria", response_model=List[VehiculoRead], tags=["Vehículos"])
-async def listar_vehiculos_sin_bateria(session: AsyncSession = Depends(get_session)):
-    return await obtener_vehiculos_sin_bateria(session)
