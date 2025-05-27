@@ -11,6 +11,20 @@
     <br>
 
     <div class="container">
+        <div class="container mt-4 mb-4">
+            <form method="get" action="/baterias" class="d-flex justify-content-center align-items-center">
+                <label for="asignada" class="me-2 fw-bold">Filtrar por estado de asignación:</label>
+                <select name="asignada" id="asignada" class="form-select w-auto me-2">
+                    <option value="">-- Todos --</option>
+                    <option value="true" {% if asignada == 'true' %}selected{% endif %}>Asignadas</option>
+                    <option value="false" {% if asignada == 'false' %}selected{% endif %}>Sin asignar</option>
+                </select>
+                <button type="submit" class="btn btn-secondary me-2">Filtrar</button>
+                {% if asignada %}
+                    <a href="/baterias" class="btn btn-outline-dark">Quitar filtro</a>
+                {% endif %}
+            </form>
+        </div>
         <div class="table-responsive mt-4">
             <table class="table table-striped table-hover table-bordered align-middle shadow-sm">
                 <thead class="table-dark text-center">
