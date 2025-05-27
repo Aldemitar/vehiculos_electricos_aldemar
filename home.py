@@ -124,7 +124,7 @@ async def vista_vehiculos_html(
             titulo = "Marca no válida"
     else:
         vehiculos = await obtener_vehiculos_db(session)
-        titulo = "Todos los Vehículos"
+        titulo = "Vehículos registrados"
     
     return templates.TemplateResponse("vehiculos_registro.html", {
         "request": request,
@@ -133,6 +133,13 @@ async def vista_vehiculos_html(
         "marca_seleccionada": marca
     })
 
+@router.get("/baterias_registro", tags=["Baterías"])
+async def ver_baterias(request: Request, session: AsyncSession = Depends(get_session)):
+    baterias = await obtener_baterias_db(session)
+    return templates.TemplateResponse("baterias_registro.html", {"request": request, "baterias": baterias, "titulo": "Baterías registradas"})
+
+
+
 
 
 
@@ -140,10 +147,6 @@ async def vista_vehiculos_html(
 @router.post("/baterias", response_model=BateriaRead, status_code=status.HTTP_201_CREATED, tags=["Baterías"])
 async def crear_bateria(bateria_create: BateriaCreateForm = Depends(), session: AsyncSession = Depends(get_session)):
     return await crear_bateria_db(bateria_create, session)
-
-@router.get("/baterias", response_model=List[BateriaRead], tags=["Baterías"])
-async def listar_baterias(session: AsyncSession = Depends(get_session)):
-    return await obtener_baterias_db(session)
 
 @router.delete("/baterias/{bateria_id}", tags=["Baterías"])
 async def eliminar_bateria(bateria_id: int, session: AsyncSession = Depends(get_session)):
