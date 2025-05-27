@@ -164,12 +164,30 @@ async def eliminar_bateria_form(bateria_id: int, session: AsyncSession = Depends
     await eliminar_bateria_db(bateria_id, session)
     return RedirectResponse(url="/baterias_registro", status_code=303)
 
+@router.get("/baterias/edit/{bateria_id}", tags=["Baterías"])
+async def form_editar_bateria(bateria_id: int, request: Request, session: AsyncSession = Depends(get_session)):
+    result = await session.execute(select(Bateria).where(Bateria.id == bateria_id))
+    bateria = result.scalar_one_or_none()
+
+    if bateria is None:
+        raise HTTPException(status_code=404, detail="Batería no encontrada")
+
+    return templates.TemplateResponse("edit_bateria.html", {
+        "request": request,
+        "bateria": bateria
+    })
+
+@router.post("/baterias/update/{bateria_id}", tags=["Baterías"])
+async def actualizar_bateria_form(
+    bateria_id: int,
+    bateria_update: BateriaUpdateForm = Depends(),
+    session: AsyncSession = Depends(get_session)
+):
+    await actualizar_bateria_db(bateria_id, bateria_update, session)
+    return RedirectResponse(url="/baterias_registro", status_code=303)
 
 
 
-@router.delete("/baterias/{bateria_id}", tags=["Baterías"])
-async def eliminar_bateria(bateria_id: int, session: AsyncSession = Depends(get_session)):
-    return await eliminar_bateria_db(bateria_id, session)
 
 @router.patch("/baterias/{bateria_id}", response_model=BateriaRead, tags=["Baterías"])
 async def actualizar_bateria(
