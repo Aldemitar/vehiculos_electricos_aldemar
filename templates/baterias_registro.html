@@ -21,6 +21,7 @@
                         <th>Ciclos de Carga</th>
                         <th>Temperatura (°C)</th>
                         <th>ID Vehículo</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody class="text-center">
@@ -32,18 +33,24 @@
                         <td>{{ bateria.ciclos_carga or 0 }}</td>
                         <td>{{ bateria.temperatura_operacion if bateria.temperatura_operacion is not none else 'N/A' }}</td>
                         <td>{{ bateria.vehiculo_id if bateria.vehiculo_id else 'Sin asignar' }}</td>
+                        <td>
+                            <form action="/baterias/delete/{{ bateria.id }}" method="POST" style="display:inline;" onsubmit="return confirm('¿Estás seguro de eliminar esta batería?');">
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="bi bi-trash"></i> Eliminar
+                                </button>
+                            </form>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
-            <div class="text-center mt-4 mb-4">
+        <div class="mb-4 text-center">
             <a href="/baterias/add" class="btn btn-primary">
                 <i class="bi bi-plus-lg"></i> Agregar Batería
             </a>
         </div>
     </div>
-
-<br>
+    <br>
 
 {% endblock %}
