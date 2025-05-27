@@ -150,13 +150,22 @@ async def procesar_formulario_bateria(
     await crear_bateria_db(bateria_form, session)
     return RedirectResponse(url="/baterias_registro", status_code=status.HTTP_303_SEE_OTHER)
 
+@router.get("/baterias/view", tags=["Baterías"])
+async def mostrar_baterias(request: Request, session: AsyncSession = Depends(get_session)):
+    baterias = await obtener_baterias_db(session)
+    return templates.TemplateResponse("baterias_registro.html", {
+        "request": request,
+        "baterias": baterias,
+        "titulo": "Registro de Baterías"
+    })
+
+@router.post("/baterias/delete/{bateria_id}", tags=["Baterías"])
+async def eliminar_bateria_form(bateria_id: int, session: AsyncSession = Depends(get_session)):
+    await eliminar_bateria_db(bateria_id, session)
+    return RedirectResponse(url="/baterias_registro", status_code=303)
 
 
 
-
-@router.post("/baterias", response_model=BateriaRead, status_code=status.HTTP_201_CREATED, tags=["Baterías"])
-async def crear_bateria(bateria_create: BateriaCreateForm = Depends(), session: AsyncSession = Depends(get_session)):
-    return await crear_bateria_db(bateria_create, session)
 
 @router.delete("/baterias/{bateria_id}", tags=["Baterías"])
 async def eliminar_bateria(bateria_id: int, session: AsyncSession = Depends(get_session)):
