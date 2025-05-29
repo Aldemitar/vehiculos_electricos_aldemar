@@ -3,6 +3,7 @@ from typing import Optional
 from data.enums import MarcaVehiculo
 from pydantic import validator
 from datetime import date
+from sqlalchemy import Column, Boolean
 
 class Vehiculo(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
