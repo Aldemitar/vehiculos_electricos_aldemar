@@ -9,6 +9,7 @@ class Vehiculo(SQLModel, table=True):
     marca: MarcaVehiculo
     modelo: str
     año: int
+    eliminado: bool = Field(default=False, sa_column=Column(Boolean, default=False))  # <-- nuevo campo
     bateria: Optional["Bateria"] = Relationship(back_populates="vehiculo")
 
 class Bateria(SQLModel, table=True):
