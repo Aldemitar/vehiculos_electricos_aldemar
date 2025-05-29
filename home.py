@@ -83,6 +83,28 @@ async def eliminar_vehiculo_form(vehiculo_id: int, session: AsyncSession = Depen
     await eliminar_vehiculo_db(vehiculo_id, session)
     return RedirectResponse(url="/vehiculos_registro", status_code=status.HTTP_303_SEE_OTHER)
 
+@router.get("/vehiculos_eliminados", response_class=HTMLResponse, tags=["Vehículos"])
+async def vehiculos_eliminados_html(request: Request, session: AsyncSession = Depends(get_session)):
+    result = await session.execute(select(Vehiculo).where(Vehiculo.eliminado == True))
+    vehiculos = result.scalars().all()
+    return templates.TemplateResponse("vehiculos_eliminados.html", {
+        "request": request,
+        "sesiones": vehiculos,
+        "titulo": "Vehículos eliminados"
+    })
+
+@router.post("/vehiculos/restaurar/{vehiculo_id}", tags=["Vehículos"])
+async def restaurar_vehiculo(vehiculo_id: int, session: AsyncSession = Depends(get_session)):
+    result = await session.execute(select(Vehiculo).where(Vehiculo.id == vehiculo_id))
+    vehiculo = result.scalar_one_or_none()
+
+    if vehiculo is None or vehiculo.eliminado is False:
+        raise HTTPException(status_code=404, detail="Vehículo no encontrado o ya está activo.")
+
+    vehiculo.eliminado = False
+    await session.commit()
+    return RedirectResponse(url="/vehiculos_eliminados", status_code=status.HTTP_303_SEE_OTHER)
+
 @router.get("/vehiculos/edit/{vehiculo_id}", tags=["Vehículos"])
 async def editar_vehiculo_form(request: Request, vehiculo_id: int, session: AsyncSession = Depends(get_session)):
     result = await session.execute(select(Vehiculo).where(Vehiculo.id == vehiculo_id))
