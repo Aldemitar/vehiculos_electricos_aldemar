@@ -8,6 +8,8 @@ from data.enums import MarcaVehiculo
 from data.models import Vehiculo, Bateria
 from data.schemas import VehiculoUpdateForm, BateriaCreateForm
 
+from typing import List
+
 async def crear_vehiculo_db(vehiculo_create, session: AsyncSession):
     vehiculo = Vehiculo(**vehiculo_create.dict())
     session.add(vehiculo)
@@ -15,10 +17,9 @@ async def crear_vehiculo_db(vehiculo_create, session: AsyncSession):
     await session.refresh(vehiculo) 
     return vehiculo
 
-async def obtener_vehiculos_db(session: AsyncSession):
-    result = await session.execute(select(Vehiculo))
-    vehiculos = result.scalars().all()
-    return vehiculos
+async def obtener_vehiculos_db(session: AsyncSession) -> List[Vehiculo]:
+    result = await session.execute(select(Vehiculo).where(Vehiculo.eliminado == False))
+    return result.scalars().all()
 
 async def eliminar_vehiculo_db(vehiculo_id: int, session: AsyncSession):
     result = await session.execute(select(Vehiculo).where(Vehiculo.id == vehiculo_id))
@@ -27,9 +28,9 @@ async def eliminar_vehiculo_db(vehiculo_id: int, session: AsyncSession):
     if vehiculo is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vehículo no encontrado.")
 
-    await session.delete(vehiculo)
+    vehiculo.eliminado = True
     await session.commit()
-    return {"mensaje": f"Vehículo con ID {vehiculo_id} eliminado correctamente."}
+    return {"mensaje": f"Vehículo con ID {vehiculo_id} marcado como eliminado."}
 
 async def filtrar_vehiculos_por_marca_db(marca: MarcaVehiculo, session: AsyncSession):
     result = await session.execute(select(Vehiculo).where(Vehiculo.marca == marca))
