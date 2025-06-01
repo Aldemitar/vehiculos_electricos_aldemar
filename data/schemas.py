@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from fastapi import Form
+from fastapi import Form, UploadFile, File
 from data.models import MarcaVehiculo
 from typing import Optional
 
@@ -7,6 +7,7 @@ class VehiculoBase(BaseModel):
     marca: MarcaVehiculo
     modelo: str
     año: int
+    imagen_url: Optional[str] = None 
 
 class VehiculoCreate(VehiculoBase):
     pass
@@ -17,10 +18,12 @@ class VehiculoCreateForm:
         marca: MarcaVehiculo = Form(...),
         modelo: str = Form(...),
         año: int = Form(...),
+        imagen: Optional[UploadFile] = File(None),
     ):
         self.marca = marca
         self.modelo = modelo
         self.año = año
+        self.imagen = imagen
 
 class VehiculoRead(VehiculoBase):
     id: int
