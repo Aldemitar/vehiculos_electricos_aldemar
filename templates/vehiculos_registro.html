@@ -37,6 +37,7 @@
                         <th>Marca</th>
                         <th>Modelo</th>
                         <th>Año</th>
+                        <th>Imagen</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -47,6 +48,13 @@
                         <td>{{ vehiculo.marca.value }}</td>
                         <td>{{ vehiculo.modelo }}</td>
                         <td>{{ vehiculo.año }}</td>
+                        <td>
+                            {% if vehiculo.imagen_url %}
+                                <img src="{{ vehiculo.imagen_url }}" alt="Imagen de {{ vehiculo.modelo }}" style="width: 100px; height: auto; object-fit: contain;">
+                            {% else %}
+                                Sin imagen
+                            {% endif %}
+                        </td>
                         <td>
                             <a href="/vehiculos/edit/{{ vehiculo.id }}" class="btn btn-warning btn-sm">
                                 <i class="bi bi-pencil"></i> Actualizar
