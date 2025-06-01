@@ -63,21 +63,23 @@ async def crear_bateria_db(bateria_create: BateriaCreateForm, session: AsyncSess
     await session.refresh(bateria)
     return bateria
 
-async def obtener_baterias_db(session: AsyncSession):
-    result = await session.execute(select(Bateria))
-    baterias = result.scalars().all()
-    return baterias
+async def obtener_baterias_db(session: AsyncSession) -> List[Bateria]:
+    result = await session.execute(select(Bateria).where(Bateria.eliminado == False))
+    return result.scalars().all()
 
 async def eliminar_bateria_db(bateria_id: int, session: AsyncSession):
     result = await session.execute(select(Bateria).where(Bateria.id == bateria_id))
     bateria = result.scalar_one_or_none()
 
-    if bateria is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Batería no encontrada.")
+    if not bateria:
+        raise HTTPException(status_code=404, detail="Batería no encontrada")
 
-    await session.delete(bateria)
+    bateria.eliminado = True
     await session.commit()
-    return {"mensaje": f"Batería con ID {bateria_id} eliminada correctamente."}
+
+async def obtener_baterias_eliminadas_db(session: AsyncSession) -> List[Bateria]:
+    result = await session.execute(select(Bateria).where(Bateria.eliminado == True))
+    return result.scalars().all()
 
 async def actualizar_bateria_db(bateria_id: int, bateria_data, session: AsyncSession):
     result = await session.execute(select(Bateria).where(Bateria.id == bateria_id))
