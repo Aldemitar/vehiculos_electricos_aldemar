@@ -10,6 +10,7 @@ class Vehiculo(SQLModel, table=True):
     marca: MarcaVehiculo
     modelo: str
     año: int
+    imagen_url: Optional[str] = Field(default=None, description="URL de la imagen del vehículo") 
     eliminado: bool = Field(default=False, sa_column=Column(Boolean, default=False))
     bateria: Optional["Bateria"] = Relationship(back_populates="vehiculo", sa_relationship_kwargs={"uselist": False})
 
