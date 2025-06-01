@@ -51,7 +51,7 @@
                             <a href="/baterias/edit/{{ bateria.id }}" class="btn btn-warning btn-sm">
                                 <i class="bi bi-pencil"></i> Actualizar
                             </a>
-                            <form action="/baterias/delete/{{ bateria.id }}" method="POST" style="display:inline;" onsubmit="return confirm('¿Estás seguro de eliminar esta batería?');">
+                            <form action="/baterias/delete/{{ bateria.id }}" method="POST" style="display:inline;" onsubmit="return confirmarYMostrarCargaEliminar(this)">
                                 <button type="submit" class="btn btn-danger btn-sm">
                                     <i class="bi bi-trash"></i> Eliminar
                                 </button>
@@ -70,7 +70,29 @@
                 <i class="bi bi-archive"></i> Ver eliminados
             </a>
         </div>
+        <div id="pantallaCarga" class="text-center mt-4" style="display: none;">
+            <div class="spinner-border text-danger" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <p class="mt-2">Eliminando batería, por favor espera...</p>
+        </div>
     </div>
     <br>
+
+<script>
+    function confirmarYMostrarCargaEliminar(formulario) {
+        if (confirm('¿Estás seguro de eliminar esta batería?')) {
+            document.getElementById('pantallaCarga').style.display = 'block';
+
+            const boton = formulario.querySelector('button[type="submit"]');
+            boton.disabled = true;
+            boton.innerText = 'Eliminando...';
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+</script>
 
 {% endblock %}
