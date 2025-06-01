@@ -37,7 +37,7 @@
                             {% endif %}
                         </td>
                         <td>
-                            <form action="/vehiculos/restaurar/{{ vehiculo.id }}" method="POST" class="restaurarForm" onsubmit="mostrarCargaRestaurar(this)">
+                            <form action="/vehiculos/restaurar/{{ vehiculo.id }}" method="POST" class="restaurarForm" onsubmit="return confirmarYMostrarCarga(this)">
                                 <button type="submit" class="btn btn-success btn-sm">
                                     <i class="bi bi-arrow-counterclockwise"></i> Restaurar
                                 </button>
@@ -64,12 +64,18 @@
     <br>
 
 <script>
-    function mostrarCargaRestaurar(formulario) {
-        document.getElementById('pantallaCarga').style.display = 'block';
+    function confirmarYMostrarCarga(formulario) {
+        if (confirm('¿Deseas restaurar este vehículo?')) {
+            document.getElementById('pantallaCarga').style.display = 'block';
 
-        const boton = formulario.querySelector('button[type="submit"]');
-        boton.disabled = true;
-        boton.innerText = 'Restaurando...';
+            const boton = formulario.querySelector('button[type="submit"]');
+            boton.disabled = true;
+            boton.innerText = 'Restaurando...';
+            
+            return true;
+        } else {
+            return false;
+        }
     }
 </script>
 
