@@ -13,7 +13,7 @@
             <div class="card-body">
                 <h2 class="card-title mb-4 text-primary text-center">Editar Vehículo con ID #{{ vehiculo.id }}</h2>
 
-                <form action="/vehiculos/update/{{ vehiculo.id }}" method="POST">
+                <form action="/vehiculos/update/{{ vehiculo.id }}" method="POST" enctype="multipart/form-data">
                     <div class="mb-3">
                         <label for="marca" class="form-label">Marca</label>
                         <select id="marca" name="marca" class="form-select" required>
@@ -34,7 +34,11 @@
                         <label for="año" class="form-label">Año</label>
                         <input type="number" id="año" name="año" class="form-control" value="{{ vehiculo.año }}" required>
                     </div>
-
+                    
+                    <div class="mb-4">
+                        <label for="imagen" class="form-label">Imagen del Vehículo</label>
+                        <input type="file" id="imagen" name="imagen" class="form-control" accept="image/*">
+                    </div>
                     <div class="d-flex justify-content-between">
                         <button type="submit" class="btn btn-primary">Actualizar</button>
                         <a href="/vehiculos_registro" class="btn btn-outline-secondary">Cancelar</a>
