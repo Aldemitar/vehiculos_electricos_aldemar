@@ -8,6 +8,7 @@ from data.schemas import VehiculoCreate, VehiculoRead, VehiculoCreateForm
 from operations.operations_db import crear_vehiculo_db
 
 from utils.connection_db import init_db, get_session
+from utils.supabase_db import save_file
 
 from data.models import Vehiculo, Bateria
 from data.schemas import VehiculoCreateForm, VehiculoRead, VehiculoCreate, VehiculoUpdateForm, BateriaCreateForm, BateriaRead, BateriaUpdateForm
@@ -66,12 +67,23 @@ async def submit_vehiculo_form(
     vehiculo_form: VehiculoCreateForm = Depends(),
     session: AsyncSession = Depends(get_session)
 ):
+    imagen_url = None
+
+    if vehiculo_form.imagen:
+        resultado = await save_file(vehiculo_form.imagen, to_supabase=True)
+
+        if "url" in resultado:
+            imagen_url = resultado["url"]
+        else:
+            print("Error al subir imagen:", resultado.get("error"))
+
     vehiculo_create = VehiculoCreate(
         marca=vehiculo_form.marca,
         modelo=vehiculo_form.modelo,
         año=vehiculo_form.año,
+        imagen_url=imagen_url,
     )
-    nuevo_vehiculo = await crear_vehiculo_db(vehiculo_create, session)
+    await crear_vehiculo_db(vehiculo_create, session)
     return RedirectResponse(url="/vehiculos_registro", status_code=status.HTTP_303_SEE_OTHER)
 
 @router.delete("/vehiculos/{vehiculo_id}", tags=["Vehículos"])
