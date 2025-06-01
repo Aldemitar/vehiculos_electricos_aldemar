@@ -8,7 +8,9 @@ from data.enums import MarcaVehiculo
 from data.models import Vehiculo, Bateria
 from data.schemas import VehiculoUpdateForm, BateriaCreateForm
 
-from typing import List
+from utils.supabase_db import save_file, supabase, SUPABASE_BUCKET, get_supabase_path_from_url
+
+from typing import List, Optional
 
 async def crear_vehiculo_db(vehiculo_create, session: AsyncSession):
     vehiculo = Vehiculo(**vehiculo_create.dict())
@@ -41,15 +43,25 @@ async def actualizar_vehiculo_db_form(vehiculo_id: int, vehiculo_update: Vehicul
     result = await session.execute(select(Vehiculo).where(Vehiculo.id == vehiculo_id))
     vehiculo = result.scalar_one_or_none()
     if vehiculo is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vehículo no encontrado.")
-    update_data = {
-        "marca": vehiculo_update.marca,
-        "modelo": vehiculo_update.modelo,
-        "año": vehiculo_update.año
-    }
-    for key, value in update_data.items():
-        if value is not None:
-            setattr(vehiculo, key, value)
+        raise HTTPException(status_code=404, detail="Vehículo no encontrado")
+    imagen_actual = vehiculo.imagen_url
+    nueva_imagen_url: Optional[str] = None
+    if vehiculo_update.imagen:
+        resultado = await save_file(vehiculo_update.imagen, to_supabase=True)
+
+        if "url" in resultado:
+            nueva_imagen_url = resultado["url"]
+            if imagen_actual:
+                path_antiguo = get_supabase_path_from_url(imagen_actual, SUPABASE_BUCKET)
+                supabase.storage.from_(SUPABASE_BUCKET).remove([path_antiguo])
+        else:
+            print("Error al subir nueva imagen:", resultado.get("error"))
+    for campo in ["marca", "modelo", "año"]:
+        valor = getattr(vehiculo_update, campo)
+        if valor is not None:
+            setattr(vehiculo, campo, valor)
+    if nueva_imagen_url:
+        vehiculo.imagen_url = nueva_imagen_url
 
     session.add(vehiculo)
     await session.commit()
