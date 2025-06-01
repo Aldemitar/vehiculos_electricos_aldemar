@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block title %} {{ titulo }} {% endblock %}
 {% block content %}    
-    
+
     <header class="bg-dark text-white py-5">
         <div class="container text-center">
             <h1 class="display-3 fw-bold mb-3">{{ titulo }}</h1>
@@ -13,7 +13,7 @@
             <div class="card-body">
                 <h2 class="card-title mb-4 text-primary text-center">Añadir Nueva Batería</h2>
 
-                <form method="post" action="/baterias/add">
+                <form id="bateriaForm" method="post" action="/baterias/add" onsubmit="mostrarCarga()">
                     <div class="mb-3">
                         <label for="capacidad_kWh" class="form-label">Capacidad (kWh)</label>
                         <input type="number" step="0.1" name="capacidad_kWh" id="capacidad_kWh" class="form-control" required>
@@ -34,15 +34,32 @@
                         <input type="number" step="0.1" name="temperatura_operacion" id="temperatura_operacion" class="form-control">
                     </div>
 
-                    <div class="d-flex justify-content-between">
-                        <button type="submit" class="btn btn-primary">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <button id="submitBtn" type="submit" class="btn btn-primary">
                             <i class="bi bi-check-circle"></i> Crear Batería
                         </button>
                         <a href="/baterias_registro" class="btn btn-outline-secondary">Cancelar</a>
+                    </div>
+
+                    <div id="pantallaCarga" class="text-center mt-4" style="display: none;">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                        <p class="mt-2">Procesando, por favor espera...</p>
                     </div>
                 </form>
             </div>
         </div>
     </div>
+
+<script>
+    function mostrarCarga() {
+        document.getElementById('pantallaCarga').style.display = 'block';
+
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'Enviando...';
+    }
+</script>
 
 {% endblock %}
