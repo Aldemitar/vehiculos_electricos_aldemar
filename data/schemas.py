@@ -35,11 +35,13 @@ class VehiculoUpdateForm:
         self,
         marca: Optional[MarcaVehiculo] = Form(None),
         modelo: Optional[str] = Form(None),
-        año: Optional[int] = Form(None)
+        año: Optional[int] = Form(None),
+        imagen: Optional[UploadFile] = File(None)
     ):
         self.marca = marca
         self.modelo = modelo
         self.año = año
+        self.imagen = imagen
 
 class BateriaRead(BaseModel):
     id: int
