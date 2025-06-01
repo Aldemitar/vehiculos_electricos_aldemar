@@ -9,8 +9,6 @@
     </header>
     <br>
 
-    <br>
-
     <div class="container">
         <div class="table-responsive">
             <div class="container mt-4 mb-4">
@@ -30,6 +28,7 @@
                     {% endif %}
                 </form>
             </div>
+
             <table class="table table-striped table-hover table-bordered align-middle shadow-sm">
                 <thead class="table-dark text-center">
                     <tr>
@@ -59,7 +58,7 @@
                             <a href="/vehiculos/edit/{{ vehiculo.id }}" class="btn btn-warning btn-sm">
                                 <i class="bi bi-pencil"></i> Actualizar
                             </a>
-                            <form action="/vehiculos/delete/{{ vehiculo.id }}" method="POST" style="display:inline;" onsubmit="return confirm('¿Estás seguro de eliminar este vehículo?');">
+                            <form action="/vehiculos/delete/{{ vehiculo.id }}" method="POST" style="display:inline;" onsubmit="return confirmarYMostrarCargaEliminar(this)">
                                 <button type="submit" class="btn btn-danger btn-sm">
                                     <i class="bi bi-trash"></i> Eliminar
                                 </button>
@@ -79,7 +78,30 @@
                 <i class="bi bi-archive"></i> Ver eliminados
             </a>
         </div>
+
+        <div id="pantallaCarga" class="text-center mt-4" style="display: none;">
+            <div class="spinner-border text-danger" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <p class="mt-2">Eliminando vehículo, por favor espera...</p>
+        </div>
     </div>
     <br>
+
+<script>
+    function confirmarYMostrarCargaEliminar(formulario) {
+        if (confirm('¿Estás seguro de eliminar este vehículo?')) {
+            document.getElementById('pantallaCarga').style.display = 'block';
+
+            const boton = formulario.querySelector('button[type="submit"]');
+            boton.disabled = true;
+            boton.innerText = 'Eliminando...';
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+</script>
 
 {% endblock %}
