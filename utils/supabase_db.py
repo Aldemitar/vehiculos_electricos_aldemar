@@ -4,6 +4,7 @@ from fastapi import UploadFile
 from dotenv import load_dotenv
 import aiofiles
 from supabase import create_client
+from urllib.parse import urlparse
 
 load_dotenv()
 
@@ -58,3 +59,7 @@ async def save_to_local(file: UploadFile, filename: str):
         await out_file.write(content)
 
     return {"filename": filename, "local_path": file_path}
+
+def get_supabase_path_from_url(url: str, bucket_name: str) -> str:
+    parsed = urlparse(url)
+    return parsed.path.replace(f"/storage/v1/object/public/{bucket_name}/", "")
