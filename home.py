@@ -123,13 +123,12 @@ async def editar_vehiculo_form(request: Request, vehiculo_id: int, session: Asyn
     vehiculo = result.scalar_one_or_none()
     if vehiculo is None:
         raise HTTPException(status_code=404, detail="Vehículo no encontrado")
-    
-    return templates.TemplateResponse(
-        "edit_vehicle.html", 
-        {
-            "request": request, 
+
+    return templates.TemplateResponse("edit_vehicle.html",{
+            "request": request,
             "vehiculo": vehiculo,
-            "marcas": MarcaVehiculo
+            "marcas": MarcaVehiculo,
+            "imagen_url": vehiculo.imagen_url
         }
     )
 
@@ -150,7 +149,7 @@ async def vista_vehiculos_html(
 ):
     if marca:
         try:
-            marca_enum = MarcaVehiculo(marca)  # convertir a Enum si se pasa como string
+            marca_enum = MarcaVehiculo(marca)
             vehiculos = await filtrar_vehiculos_por_marca_db(marca_enum, session)
             titulo = f"Vehículos - Marca: {marca}"
         except ValueError:
