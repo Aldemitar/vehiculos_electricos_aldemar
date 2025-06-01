@@ -103,7 +103,7 @@ async def restaurar_vehiculo(vehiculo_id: int, session: AsyncSession = Depends(g
 
     vehiculo.eliminado = False
     await session.commit()
-    return RedirectResponse(url="/vehiculos_eliminados", status_code=status.HTTP_303_SEE_OTHER)
+    return RedirectResponse(url="/vehiculos_registro", status_code=status.HTTP_303_SEE_OTHER)
 
 @router.get("/vehiculos/edit/{vehiculo_id}", tags=["Vehículos"])
 async def editar_vehiculo_form(request: Request, vehiculo_id: int, session: AsyncSession = Depends(get_session)):
