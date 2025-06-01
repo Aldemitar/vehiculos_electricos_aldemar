@@ -31,8 +31,8 @@
                     <td>{{ bateria.ciclos_carga or 0 }}</td>
                     <td>{{ bateria.temperatura_operacion or 'N/D' }}</td>
                     <td>
-                        <form action="/baterias/restaurar/{{ bateria.id }}" method="POST" style="display:inline;">
-                            <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('¿Deseas restaurar esta batería?')">
+                        <form action="/baterias/restaurar/{{ bateria.id }}" method="POST" class="restaurarForm" onsubmit="return confirmarYMostrarCarga(this)">
+                            <button type="submit" class="btn btn-success btn-sm">
                                 <i class="bi bi-arrow-counterclockwise"></i> Restaurar
                             </button>
                         </form>
@@ -48,7 +48,30 @@
             <i class="bi bi-arrow-left"></i> Volver al listado
         </a>
     </div>
+
+    <div id="pantallaCarga" class="text-center mt-4" style="display: none;">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando...</span>
+        </div>
+        <p class="mt-2">Procesando restauración, por favor espera...</p>
+    </div>
 </div>
 <br>
+
+<script>
+    function confirmarYMostrarCarga(formulario) {
+        if (confirm('¿Deseas restaurar esta batería?')) {
+            document.getElementById('pantallaCarga').style.display = 'block';
+
+            const boton = formulario.querySelector('button[type="submit"]');
+            boton.disabled = true;
+            boton.innerText = 'Restaurando...';
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+</script>
 
 {% endblock %}
