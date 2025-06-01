@@ -13,7 +13,7 @@
             <div class="card-body">
                 <h2 class="card-title mb-4 text-primary text-center">Editar Batería con ID #{{ bateria.id }}</h2>
 
-                <form action="/baterias/update/{{ bateria.id }}" method="POST">
+                <form id="bateriaEditForm" action="/baterias/update/{{ bateria.id }}" method="POST" onsubmit="mostrarCarga()">
                     <div class="mb-3">
                         <label for="capacidad_kWh" class="form-label">Capacidad (kWh)</label>
                         <input type="number" step="0.1" id="capacidad_kWh" name="capacidad_kWh" class="form-control" value="{{ bateria.capacidad_kWh }}" required>
@@ -34,13 +34,30 @@
                         <input type="number" step="0.1" id="temperatura_operacion" name="temperatura_operacion" class="form-control" value="{{ bateria.temperatura_operacion }}">
                     </div>
 
-                    <div class="d-flex justify-content-between">
-                        <button type="submit" class="btn btn-primary">Actualizar</button>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <button id="submitBtn" type="submit" class="btn btn-primary">Actualizar</button>
                         <a href="/baterias_registro" class="btn btn-outline-secondary">Cancelar</a>
+                    </div>
+
+                    <div id="pantallaCarga" class="text-center mt-4" style="display: none;">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                        <p class="mt-2">Procesando, por favor espera...</p>
                     </div>
                 </form>
             </div>
         </div>
     </div>
+
+<script>
+    function mostrarCarga() {
+        document.getElementById('pantallaCarga').style.display = 'block';
+
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'Actualizando...';
+    }
+</script>
 
 {% endblock %}
