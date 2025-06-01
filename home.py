@@ -172,19 +172,40 @@ async def procesar_formulario_bateria(
     await crear_bateria_db(bateria_form, session)
     return RedirectResponse(url="/baterias_registro", status_code=status.HTTP_303_SEE_OTHER)
 
-@router.get("/baterias/view", tags=["Baterías"])
-async def mostrar_baterias(request: Request, session: AsyncSession = Depends(get_session)):
-    baterias = await obtener_baterias_db(session)
-    return templates.TemplateResponse("baterias_registro.html", {
-        "request": request,
-        "baterias": baterias,
-        "titulo": "Registro de Baterías"
-    })
-
 @router.post("/baterias/delete/{bateria_id}", tags=["Baterías"])
 async def eliminar_bateria_form(bateria_id: int, session: AsyncSession = Depends(get_session)):
-    await eliminar_bateria_db(bateria_id, session)
+    result = await session.execute(select(Bateria).where(Bateria.id == bateria_id))
+    bateria = result.scalar_one_or_none()
+
+    if bateria is None:
+        raise HTTPException(status_code=404, detail="Batería no encontrada")
+
+    bateria.eliminado = True
+    await session.commit()
+    
     return RedirectResponse(url="/baterias_registro", status_code=303)
+
+@router.post("/baterias/restaurar/{bateria_id}")
+async def restaurar_bateria(bateria_id: int, session: AsyncSession = Depends(get_session)):
+    result = await session.execute(select(Bateria).where(Bateria.id == bateria_id))
+    bateria = result.scalar_one_or_none()
+
+    if not bateria:
+        raise HTTPException(status_code=404, detail="Batería no encontrada")
+
+    bateria.eliminado = False
+    await session.commit()
+    return RedirectResponse(url="/baterias_registro", status_code=303)
+
+@router.get("/baterias/eliminadas", response_class=HTMLResponse)
+async def baterias_eliminadas_html(request: Request, session: AsyncSession = Depends(get_session)):
+    result = await session.execute(select(Bateria).where(Bateria.eliminado == True))
+    baterias = result.scalars().all()
+    return templates.TemplateResponse("baterias_eliminadas.html", {
+        "request": request,
+        "baterias": baterias,
+        "titulo": "Baterías eliminadas"
+    })
 
 @router.get("/baterias/edit/{bateria_id}", tags=["Baterías"])
 async def form_editar_bateria(bateria_id: int, request: Request, session: AsyncSession = Depends(get_session)):
