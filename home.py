@@ -166,11 +166,6 @@ async def vista_vehiculos_html(
         "marca_seleccionada": marca
     })
 
-@router.get("/baterias_registro", tags=["Baterías"])
-async def ver_baterias(request: Request, session: AsyncSession = Depends(get_session)):
-    baterias = await obtener_baterias_db(session)
-    return templates.TemplateResponse("baterias_registro.html", {"request": request, "baterias": baterias, "titulo": "Baterías registradas"})
-
 @router.get("/baterias/add", tags=["Baterías"])
 async def form_agregar_bateria(request: Request):
     return templates.TemplateResponse("add_bateria.html", {"request": request, "titulo": "Creación Batería"})
@@ -246,7 +241,7 @@ async def mostrar_baterias(
     session: AsyncSession = Depends(get_session),
     asignada: Optional[str] = None
 ):
-    query = select(Bateria)
+    query = select(Bateria).where(Bateria.eliminado == False)
     if asignada == "true":
         query = query.where(Bateria.vehiculo_id.is_not(None))
     elif asignada == "false":
@@ -255,20 +250,33 @@ async def mostrar_baterias(
     result = await session.execute(query)
     baterias = result.scalars().all()
 
+    vehiculos_disponibles = await obtener_vehiculos_sin_bateria(session)
     return templates.TemplateResponse("baterias_registro.html", {
         "request": request,
         "titulo": "Baterías registradas",
         "baterias": baterias,
-        "asignada": asignada
+        "asignada": asignada,
+        "vehiculos_disponibles": vehiculos_disponibles
     })
 
-@router.post("/baterias/{bateria_id}/asociar", response_model=BateriaRead, tags=["Operaciones vehículo-Batería"])
+@router.post("/baterias/{bateria_id}/asociar", tags=["Operaciones vehículo-Batería"])
 async def asociar_bateria_a_vehiculo(
     bateria_id: int,
     vehiculo_id: int = Form(...),
     session: AsyncSession = Depends(get_session),
 ):
-    return await asociar_bateria_a_vehiculo_db(bateria_id, vehiculo_id, session)
+    await asociar_bateria_a_vehiculo_db(bateria_id, vehiculo_id, session)
+    return RedirectResponse(url="/baterias", status_code=303)
+
+@router.post("/baterias/{bateria_id}/desasociar")
+async def desasociar_bateria(bateria_id: int, session: AsyncSession = Depends(get_session)):
+    result = await session.execute(select(Bateria).where(Bateria.id == bateria_id))
+    bateria = result.scalar_one_or_none()
+    if not bateria:
+        raise HTTPException(status_code=404, detail="Batería no encontrada")
+    bateria.vehiculo_id = None
+    await session.commit()
+    return RedirectResponse(url="/baterias", status_code=303)
 
 @router.get("/dashboard", tags=["Operaciones vehículo-Batería"])
 async def dashboard_metrica(session: AsyncSession = Depends(get_session)):
