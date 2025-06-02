@@ -146,6 +146,10 @@ async def obtener_vehiculos_con_bateria(session: AsyncSession):
     return result.scalars().all()
 
 async def obtener_vehiculos_sin_bateria(session: AsyncSession):
-    query = select(Vehiculo).where(Vehiculo.bateria == None)
-    result = await session.execute(query)
+    stmt = (
+        select(Vehiculo)
+        .outerjoin(Bateria, Vehiculo.id == Bateria.vehiculo_id)
+        .where(Bateria.id == None, Vehiculo.eliminado == False)
+    )
+    result = await session.execute(stmt)
     return result.scalars().all()
