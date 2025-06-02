@@ -56,6 +56,31 @@
                                     <i class="bi bi-trash"></i> Eliminar
                                 </button>
                             </form>
+                            {% if not bateria.vehiculo_id %}
+                            <form action="/baterias/{{ bateria.id }}/asociar" method="post" class="mt-2 d-flex flex-column align-items-center">
+                                <div class="input-group">
+                                    <select name="vehiculo_id" class="form-select form-select-sm" required>
+                                        <option value="">-- Asociar a vehículo --</option>
+                                        {% if vehiculos_disponibles %}
+                                            {% for vehiculo in vehiculos_disponibles %}
+                                                <option value="{{ vehiculo.id }}">{{ vehiculo.modelo }} (ID {{ vehiculo.id }})</option>
+                                            {% endfor %}
+                                        {% else %}
+                                            <option disabled>No hay vehículos disponibles</option>
+                                        {% endif %}
+                                    </select>
+                                    <button type="submit" class="btn btn-success btn-sm">
+                                        <i class="bi bi-link-45deg"></i> Asociar
+                                    </button>
+                                </div>
+                            </form>
+                            {% else %}
+                            <form action="/baterias/{{ bateria.id }}/desasociar" method="POST" class="mt-2" onsubmit="return confirm('¿Desasociar esta batería del vehículo?')">
+                                <button type="submit" class="btn btn-outline-secondary btn-sm">
+                                    <i class="bi bi-x-circle"></i> Desasignar
+                                </button>
+                            </form>
+                            {% endif %}
                         </td>
                     </tr>
                     {% endfor %}
@@ -83,11 +108,9 @@
     function confirmarYMostrarCargaEliminar(formulario) {
         if (confirm('¿Estás seguro de eliminar esta batería?')) {
             document.getElementById('pantallaCarga').style.display = 'block';
-
             const boton = formulario.querySelector('button[type="submit"]');
             boton.disabled = true;
             boton.innerText = 'Eliminando...';
-
             return true;
         } else {
             return false;
