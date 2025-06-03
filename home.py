@@ -329,3 +329,7 @@ async def estadisticas(request: Request, session: AsyncSession = Depends(get_ses
         "salud_labels": salud_labels,
         "salud_data": salud_data,
     })
+
+@router.get("/planeacion", response_class=HTMLResponse)
+async def ver_planeacion(request: Request):
+    return templates.TemplateResponse("planeacion.html", {"request": request})
