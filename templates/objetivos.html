@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}Objetivo del Proyecto{% endblock %}
+
+{% block content %}
+    <header class="bg-dark text-white py-5">
+        <div class="container text-center">
+            <h1 class="display-4 fw-bold">Objetivo del Proyecto</h1>
+            <p class="lead">Sistema de gestión de vehículos eléctricos y sus baterías, desarrollado con FastAPI, SUPABASE, SQLModel y PostgreSQL.</p>
+        </div>
+    </header>
+
+    <div class="container my-5">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h4 class="text-center mb-4">🎯 Objetivo General</h4>
+                <p class="fs-5 text-justify">
+                    El propósito de este proyecto es construir una plataforma digital intuitiva, eficiente y segura que permita llevar un control preciso de los vehículos eléctricos y sus respectivas baterías. Se busca facilitar tanto la gestión administrativa como técnica del inventario, brindando herramientas visuales e interactivas que simplifiquen el registro, monitoreo, análisis y mantenimiento de los recursos tecnológicos, apoyando así procesos sostenibles, tecnológicos e innovadores dentro del ámbito de la movilidad eléctrica.
+                </p>
+
+                <hr class="my-4">
+
+                <h5 class="text-center">🎯 Objetivos Específicos</h5>
+                <ul class="list-group list-group-flush mt-3">
+                    <li class="list-group-item">
+                        📌 <strong>Modelar adecuadamente la estructura de datos</strong> para representar entidades como vehículos y baterías, usando SQLModel y SQLAlchemy, estableciendo relaciones uno a uno y controlando estados como “eliminado” o “activo”.
+                    </li>
+                    <li class="list-group-item">
+                        📌 <strong>Implementar un conjunto de vistas web con Jinja2</strong> que permitan operaciones CRUD para ambas entidades, incluyendo formularios dinámicos, validaciones, y retroalimentación visual clara.
+                    </li>
+                    <li class="list-group-item">
+                        📌 <strong>Habilitar la asociación y desasociación directa</strong> entre vehículos y baterías desde la interfaz gráfica, asegurando integridad de datos y usabilidad.
+                    </li>
+                    <li class="list-group-item">
+                        📌 <strong>Incorporar almacenamiento externo de imágenes</strong> mediante Supabase, permitiendo la subida, gestión y visualización de fotografías para cada vehículo o batería.
+                    </li>
+                    <li class="list-group-item">
+                        📌 <strong>Desarrollar un módulo de estadísticas visuales</strong> que brinde información útil para la toma de decisiones, como conteo por marca, porcentaje de baterías asignadas o en estado crítico.
+                    </li>
+                    <li class="list-group-item">
+                        📌 <strong>Garantizar la disponibilidad del sistema</strong> mediante su despliegue en Render, asegurando acceso remoto desde cualquier dispositivo con conexión a internet.
+                    </li>
+                    <li class="list-group-item">
+                        📌 <strong>Diseñar una interfaz responsiva</strong> y moderna, basada en Bootstrap, que permita a cualquier usuario navegar fácilmente desde desktop o móviles.
+                    </li>
+                </ul>
+
+                <div class="text-center mt-5">
+                    <img src="/static/img/objetivo_representación.jpg" alt="Ilustración de objetivos" class="img-fluid rounded shadow" style="max-width: 700px;">
+                    <p class="text-muted mt-2"><small>Visualización del enfoque estratégico del sistema desarrollado.</small></p>
+                </div>
+
+                <div class="mt-5">
+                    <h5 class="text-center">💡 Justificación</h5>
+                    <p class="fs-6 text-justify">
+                        En el contexto actual de transición hacia tecnologías sostenibles, la movilidad eléctrica representa una necesidad urgente. Este proyecto responde a la creciente demanda de herramientas digitales que ayuden a organizar, controlar y visualizar información clave sobre recursos tecnológicos verdes. El sistema propuesto representa una contribución significativa al ecosistema de soluciones limpias, permitiendo a empresas o instituciones gestionar flotas de forma eficiente, reducir tiempos operativos y tomar decisiones informadas.
+                    </p>
+                </div>
+
+                <div class="mt-4">
+                    <h5 class="text-center">🧩 Alcance del Proyecto</h5>
+                    <p class="fs-6 text-justify">
+                        El sistema cubre los aspectos más relevantes para una gestión operativa básica y funcional de vehículos eléctricos y sus baterías. Incluye módulos de registro, edición, eliminación (con recuperación), asignación de recursos, estadísticas gráficas y almacenamiento multimedia. No contempla en esta versión funcionalidades como geolocalización, alertas automáticas o mantenimiento predictivo, pero deja una base sólida para futuras extensiones.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
