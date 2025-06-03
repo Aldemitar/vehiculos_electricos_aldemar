@@ -341,3 +341,7 @@ async def ver_diseno(request: Request):
 @router.get("/desarrollador", response_class=HTMLResponse)
 async def ver_desarrollador(request: Request):
     return templates.TemplateResponse("desarrollador.html", {"request": request})
+
+@router.get("/objetivo", response_class=HTMLResponse)
+async def ver_desarrollador(request: Request):
+    return templates.TemplateResponse("objetivos.html", {"request": request})
