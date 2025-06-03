@@ -17,6 +17,7 @@ from data.enums import MarcaVehiculo
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.future import select
+from sqlalchemy import func
 
 from typing import List, Optional
 
@@ -176,7 +177,7 @@ async def procesar_formulario_bateria(
     session: AsyncSession = Depends(get_session)
 ):
     await crear_bateria_db(bateria_form, session)
-    return RedirectResponse(url="/baterias_registro", status_code=status.HTTP_303_SEE_OTHER)
+    return RedirectResponse(url="/baterias", status_code=status.HTTP_303_SEE_OTHER)
 
 @router.post("/baterias/delete/{bateria_id}", tags=["Baterías"])
 async def eliminar_bateria_form(bateria_id: int, session: AsyncSession = Depends(get_session)):
@@ -189,7 +190,7 @@ async def eliminar_bateria_form(bateria_id: int, session: AsyncSession = Depends
     bateria.eliminado = True
     await session.commit()
     
-    return RedirectResponse(url="/baterias_registro", status_code=303)
+    return RedirectResponse(url="/baterias", status_code=303)
 
 @router.post("/baterias/restaurar/{bateria_id}")
 async def restaurar_bateria(bateria_id: int, session: AsyncSession = Depends(get_session)):
@@ -201,7 +202,7 @@ async def restaurar_bateria(bateria_id: int, session: AsyncSession = Depends(get
 
     bateria.eliminado = False
     await session.commit()
-    return RedirectResponse(url="/baterias_registro", status_code=303)
+    return RedirectResponse(url="/baterias", status_code=303)
 
 @router.get("/baterias/eliminadas", response_class=HTMLResponse)
 async def baterias_eliminadas_html(request: Request, session: AsyncSession = Depends(get_session)):
@@ -278,6 +279,53 @@ async def desasociar_bateria(bateria_id: int, session: AsyncSession = Depends(ge
     await session.commit()
     return RedirectResponse(url="/baterias", status_code=303)
 
-@router.get("/dashboard", tags=["Operaciones vehículo-Batería"])
-async def dashboard_metrica(session: AsyncSession = Depends(get_session)):
-    return await obtener_dashboard_metricas(session)
+@router.get("/estadisticas", response_class=HTMLResponse)
+async def estadisticas(request: Request, session: AsyncSession = Depends(get_session)):
+    baterias_result = await session.execute(select(Bateria).where(Bateria.eliminado == False))
+    baterias = baterias_result.scalars().all()
+
+    vehiculos_result = await session.execute(select(Vehiculo).where(Vehiculo.eliminado == False))
+    vehiculos = vehiculos_result.scalars().all()
+
+    total_baterias = len(baterias)
+    total_vehiculos = len(vehiculos)
+
+    baterias_asignadas = sum(1 for b in baterias if b.vehiculo_id)
+    baterias_no_asignadas = total_baterias - baterias_asignadas
+
+    avg_salud = round(sum(b.estado_salud for b in baterias) / total_baterias, 2) if total_baterias > 0 else 0
+
+    asignacion_labels = ["Asignadas", "No asignadas"]
+    asignacion_data = [baterias_asignadas, baterias_no_asignadas]
+
+    marca_counts = {}
+    for v in vehiculos:
+        marca_counts[v.marca] = marca_counts.get(v.marca, 0) + 1
+    marcas_labels = list(marca_counts.keys())
+    marcas_data = list(marca_counts.values())
+
+    estado_salud_counts = {"Buen estado": 0, "Regular": 0, "Mal estado": 0}
+    for b in baterias:
+        if b.estado_salud >= 80:
+            estado_salud_counts["Buen estado"] += 1
+        elif b.estado_salud >= 50:
+            estado_salud_counts["Regular"] += 1
+        else:
+            estado_salud_counts["Mal estado"] += 1
+
+    salud_labels = list(estado_salud_counts.keys())
+    salud_data = list(estado_salud_counts.values())
+
+    return templates.TemplateResponse("estadisticas.html", {
+        "request": request,
+        "titulo": "Estadísticas Generales",
+        "total_baterias": total_baterias,
+        "total_vehiculos": total_vehiculos,
+        "avg_salud": avg_salud,
+        "asignacion_labels": asignacion_labels,
+        "asignacion_data": asignacion_data,
+        "marcas_labels": marcas_labels,
+        "marcas_data": marcas_data,
+        "salud_labels": salud_labels,
+        "salud_data": salud_data,
+    })
