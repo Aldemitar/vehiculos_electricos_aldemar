@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Diseño - Proyecto{% endblock %}
+
+{% block content %}
+    <header class="bg-dark text-white py-5">
+        <div class="container text-center">
+            <h1 class="display-4 fw-bold">Desarrollador del Proyecto</h1>
+            <p class="lead">Gestión de Vehículos Eléctricos y Baterías</p>
+        </div>
+    </header>
+
+    <div class="container my-5">
+        <div class="card shadow-sm mt-5">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0 text-center">Desarrollador del Proyecto</h5>
+            </div>
+            <div class="card-body text-center">
+
+                <img src="/static/img/desarrollador.jpg" alt="Aldemar Cataño" width="300" height="300" class="rounded-circle shadow mb-3">
+
+                <h4 class="fw-bold">Aldemar Cataño Cardona</h4>
+                <p class="text-muted">Estudiante de la Universidad Católica de Colombia</p>
+                <p class="mb-1">💻 Desarrollador apasionado por la tecnología, videojuegos y sistemas web.</p>
+                <p class="mb-1">📬 <a href="mailto:aldemarcatanocardona@gmail.com">aldemarcatanocardona@gmail.com</a></p>
+                <p class="mb-3">🌐 Proyecto desplegado en <strong>Render</strong> con PostgreSQL y Supabase.</p>
+
+                <div class="d-flex justify-content-center gap-3 mt-3 flex-wrap">
+                    <a href="https://github.com/aldemitar" target="_blank">
+                        <img src="/static/img/github.png" alt="GitHub" width="48" height="48" class="rounded-circle shadow-sm">
+                    </a>
+                    <a href="https://twitter.com/aldemitarx" target="_blank">
+                        <img src="/static/img/x.jpg" alt="Twitter" width="48" height="48" class="rounded-circle shadow-sm">
+                    </a>
+                    <a href="https://instagram.com/catax.d.s" target="_blank">
+                        <img src="/static/img/ig.jpeg" alt="Instagram" width="48" height="48" class="rounded-circle shadow-sm">
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
