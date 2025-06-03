@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block title %}Planeación - Proyecto{% endblock %}
+
+{% block content %}
+<header class="bg-dark text-white py-5">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold">Planeación del Proyecto</h1>
+        <p class="lead">Gestión de Vehículos Eléctricos y Baterías</p>
+    </div>
+</header>
+
+<div class="container my-5">
+
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0 text-center"> Casos de Uso</h5>
+        </div>
+        <div class="card-body table-responsive">
+            <table class="table table-striped table-bordered align-middle">
+                <thead class="table-light text-center">
+                    <tr>
+                        <th>ID</th>
+                        <th>Caso de Uso</th>
+                        <th>Actor</th>
+                        <th>Descripción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>CU1</td><td>Registrar batería</td><td>Administrador</td><td>Permite ingresar una nueva batería al sistema.</td></tr>
+                    <tr><td>CU2</td><td>Registrar vehículo</td><td>Administrador</td><td>Permite ingresar un nuevo vehículo al sistema.</td></tr>
+                    <tr><td>CU3</td><td>Asociar batería a vehículo</td><td>Administrador</td><td>Permite asignar una batería a un vehículo específico.</td></tr>
+                    <tr><td>CU4</td><td>Desasociar batería</td><td>Administrador</td><td>Quita una batería previamente asociada.</td></tr>
+                    <tr><td>CU5</td><td>Editar información</td><td>Administrador</td><td>Modifica datos de baterías o vehículos.</td></tr>
+                    <tr><td>CU6</td><td>Eliminar y recuperar registros</td><td>Administrador</td><td>Elimina o recupera registros lógicamente.</td></tr>
+                    <tr><td>CU7</td><td>Visualizar estadísticas</td><td>Administrador</td><td>Muestra gráficas y métricas del sistema.</td></tr>
+                    <tr><td>CU8</td><td>Filtrar y buscar</td><td>Administrador</td><td>Permite aplicar filtros por estado o búsqueda.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0 text-center"> Modelo de Datos</h5>
+        </div>
+        <div class="card-body">
+            <p>El sistema se basa en dos entidades principales: <strong>Vehículos</strong> y <strong>Baterías</strong>, con una relación uno a uno (opcional).</p>
+            <ul>
+                <li>Una batería puede estar asignada a un vehículo o sin asignar.</li>
+                <li>Un vehículo puede tener una sola batería.</li>
+            </ul>
+            <div class="table-responsive">
+                <table class="table table-bordered table-sm text-center">
+                    <thead class="table-light">
+                        <tr><th>Vehiculo</th><th>Bateria</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <small>ID (PK)<br>marca<br>modelo<br>año<br>imagen_url<br>eliminado</small>
+                            </td>
+                            <td>
+                                <small>ID (PK)<br>capacidad_kWh<br>estado_salud<br>temperatura<br>ciclos_carga<br>vehiculo_id (FK)<br>eliminado</small>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="mt-3">🔗 Relación: <code>Vehiculo (1) ────── (0..1) Bateria</code></p>
+        </div>
+    </div>
+
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-warning">
+            <h5 class="mb-0 text-center"> Objetivos Propuestos</h5>
+        </div>
+        <div class="card-body">
+            <ul>
+                <li>Gestionar y monitorear el inventario de baterías y vehículos eléctricos.</li>
+                <li>Asociar/desasociar baterías a vehículos y mantener trazabilidad.</li>
+                <li>Ofrecer un panel de estadísticas útiles para la toma de decisiones.</li>
+                <li>Mantener la información incluso si los datos son eliminados lógicamente.</li>
+                <li>Implementar filtros y búsquedas para agilizar la gestión.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0 text-center"> Fuente de los Datos</h5>
+        </div>
+        <div class="card-body">
+            <p>El ingreso de datos en el sistema se realiza principalmente de forma manual por el administrador a través de la interfaz. No obstante, el planteamiento inicial se desarrolló tras revisar <strong>datasets disponibles en plataformas como Kaggle</strong>, lo cual permitió definir qué campos eran relevantes para una base de datos de baterías y vehículos eléctricos.</p>
+            <p>El sistema busca prepararse para extenderse a fuentes externas como archivos CSV</p>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
