@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block title %}Diseño - Proyecto{% endblock %}
+
+{% block content %}
+    <header class="bg-dark text-white py-5">
+        <div class="container text-center">
+            <h1 class="display-4 fw-bold">Diseño del Proyecto</h1>
+            <p class="lead">Gestión de Vehículos Eléctricos y Baterías</p>
+        </div>
+    </header>
+
+    <div class="container my-5">
+
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0 text-center"> Diagrama de Clases</h5>
+            </div>
+            <div class="card-body">
+                <p>El siguiente diagrama representa las entidades principales y su relación:</p>
+                <div class="text-center">
+                    <img src="static/img/Diagrama_de_clases.png" alt="Diagrama de Clases" class="img-fluid rounded shadow">
+                    <p class="mt-2 text-muted"><small>Relación uno a uno entre Vehículo y Batería, considerando atributos clave y campos lógicos como "eliminado".</small></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0 text-center"> Mapa de Endpoints</h5>
+            </div>
+            <div class="card-body">
+                <p>El sistema expone los siguientes endpoints organizados por recurso:</p>
+                <ul class="list-group">
+                    <li class="list-group-item"><strong>GET /vehiculos_registro</strong> - Listar vehículos</li>
+                    <li class="list-group-item"><strong>GET /vehiculos/add</strong> - Formulario para agregar vehículo</li>
+                    <li class="list-group-item"><strong>POST /vehiculos/add</strong> - Agregar vehículo</li>
+                    <li class="list-group-item"><strong>POST /vehiculos/delete/{vehiculo_id}</strong> - Eliminar vehículo (form)</li>
+                    <li class="list-group-item"><strong>DELETE /vehiculos/{vehiculo_id}</strong> - Eliminar vehículo</li>
+                    <li class="list-group-item"><strong>GET /vehiculos/edit/{vehiculo_id}</strong> - Editar vehículo</li>
+                    <li class="list-group-item"><strong>POST /vehiculos/update/{vehiculo_id}</strong> - Actualizar vehículo</li>
+                    <li class="list-group-item"><strong>GET /vehiculos?marca=X</strong> - Filtrar vehículos por marca</li>
+                    <li class="list-group-item"><strong>GET /vehiculos_eliminados</strong> - Ver vehículos eliminados</li>
+                    <li class="list-group-item"><strong>POST /vehiculos/restaurar/{vehiculo_id}</strong> - Restaurar vehículo</li>
+
+                    <li class="list-group-item"><strong>GET /baterias</strong> - Listar baterías</li>
+                    <li class="list-group-item"><strong>GET /baterias/add</strong> - Formulario para agregar batería</li>
+                    <li class="list-group-item"><strong>POST /baterias/add</strong> - Agregar batería</li>
+                    <li class="list-group-item"><strong>POST /baterias/delete/{bateria_id}</strong> - Eliminar batería</li>
+                    <li class="list-group-item"><strong>GET /baterias/edit/{bateria_id}</strong> - Editar batería</li>
+                    <li class="list-group-item"><strong>POST /baterias/update/{bateria_id}</strong> - Actualizar batería</li>
+                    <li class="list-group-item"><strong>GET /baterias/eliminadas</strong> - Ver baterías eliminadas</li>
+                    <li class="list-group-item"><strong>POST /baterias/restaurar/{bateria_id}</strong> - Restaurar batería</li>
+
+                    <li class="list-group-item"><strong>POST /baterias/{bateria_id}/asociar</strong> - Asociar batería a vehículo</li>
+                    <li class="list-group-item"><strong>POST /baterias/{bateria_id}/desasociar</strong> - Desasociar batería</li>
+
+                    <li class="list-group-item"><strong>GET /estadisticas</strong> - Módulo estadístico</li>
+
+                    <li class="list-group-item"><strong>GET /planeacion</strong> - Ver planeación del proyecto</li>
+                    <li class="list-group-item"><strong>GET /diseno</strong> - Ver diseño del proyecto</li>
+
+                </ul>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-warning">
+                <h5 class="mb-0 text-center"> Mockups / Wireframes</h5>
+            </div>
+            <div class="card-body">
+                <p>A continuación se presentan los diseños preliminares de las pantallas clave:</p>
+                <div class="row g-4">
+                    <div class="col-md-6 text-center">
+                        <img src="static/img/Mockup dashboard.png" alt="Dashboard" class="img-fluid rounded shadow-sm">
+                        <p class="mt-2"><small>Vista principal del dashboard con tarjetas y navegación.</small></p>
+                    </div>
+                    <div class="col-md-6 text-center">
+                        <img src="static/img/Mockup baterias_registro.png" alt="Gestión de Baterías" class="img-fluid rounded shadow-sm">
+                        <p class="mt-2"><small>Sección de baterías con opciones CRUD y filtros.</small></p>
+                    </div>
+                    <div class="col-md-6 text-center">
+                        <img src="static/img/Mockup vehiculos_registro.png" alt="Gestión de Vehículos" class="img-fluid rounded shadow-sm">
+                        <p class="mt-2"><small>Sección de vehículos con opciones CRUD y filtros.</small></p>
+                    </div>
+                    <div class="col-md-6 text-center">
+                        <img src="static/img/Mockup estadisticas.png" alt="Módulo de Estadísticas" class="img-fluid rounded shadow-sm">
+                        <p class="mt-2"><small>Vista estadística con gráficas por marca, salud de batería y estado de asignación.</small></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
