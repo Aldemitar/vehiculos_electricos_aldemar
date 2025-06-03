@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% block title %} {{ titulo }} - Visualizando {% endblock %}
+{% block content %}
+
+    <header class="bg-dark text-white py-5">
+        <div class="container text-center">
+            <h1 class="display-3 fw-bold mb-3">{{ titulo }}</h1>
+        </div>
+    </header>
+
+    <br>
+
+    <div class="container">
+
+        <div class="row mb-5">
+            <div class="col-md-4">
+                <div class="card text-white bg-primary shadow">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Total Baterías</h5>
+                        <p class="display-5">{{ total_baterias }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-white bg-success shadow">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Total Vehículos</h5>
+                        <p class="display-5">{{ total_vehiculos }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-white bg-info shadow">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Promedio Salud (%)</h5>
+                        <p class="display-5">{{ avg_salud }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-5">
+            <h4 class="text-center mb-3">1. Distribución de baterías asignadas</h4>
+            <div class="d-flex justify-content-center">
+                <canvas id="asignacionChart" width="400"></canvas>
+            </div>
+        </div>
+
+        <div class="mb-5">
+            <h4 class="text-center mb-3">2. Vehículos por marca</h4>
+            <div class="d-flex justify-content-center">
+                <canvas id="vehiculosChart" width="400"></canvas>
+            </div>
+        </div>
+
+        <div class="mb-5">
+            <h4 class="text-center mb-3">3. Estado de salud de baterías</h4>
+            <div class="d-flex justify-content-center">
+                <canvas id="saludChart" width="400"></canvas>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        new Chart(document.getElementById('asignacionChart').getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: {{ asignacion_labels | tojson }},
+                datasets: [{
+                    label: 'Estado de Asignación',
+                    data: {{ asignacion_data | tojson }},
+                    backgroundColor: ['#198754', '#dc3545']
+                }]
+            }
+        });
+
+        new Chart(document.getElementById('vehiculosChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: {{ marcas_labels | tojson }},
+                datasets: [{
+                    label: 'Vehículos por marca',
+                    data: {{ marcas_data | tojson }},
+                    backgroundColor: '#0d6efd'
+                }]
+            },
+            options: {
+                scales: {
+                    y: { beginAtZero: true, stepSize: 1 }
+                }
+            }
+        });
+
+        new Chart(document.getElementById('saludChart').getContext('2d'), {
+            type: 'pie',
+            data: {
+                labels: {{ salud_labels | tojson }},
+                datasets: [{
+                    label: 'Salud de Baterías',
+                    data: {{ salud_data | tojson }},
+                    backgroundColor: ['#20c997', '#ffc107', '#dc3545']
+                }]
+            }
+        });
+    </script>
+
+{% endblock %}
