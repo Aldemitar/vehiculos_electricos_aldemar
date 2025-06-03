@@ -337,3 +337,7 @@ async def ver_planeacion(request: Request):
 @router.get("/diseno", response_class=HTMLResponse)
 async def ver_diseno(request: Request):
     return templates.TemplateResponse("diseno.html", {"request": request})
+
+@router.get("/desarrollador", response_class=HTMLResponse)
+async def ver_desarrollador(request: Request):
+    return templates.TemplateResponse("desarrollador.html", {"request": request})
