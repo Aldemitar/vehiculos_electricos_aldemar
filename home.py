@@ -34,7 +34,8 @@ from operations.operations_db import (
     asociar_bateria_a_vehiculo_db,
     obtener_dashboard_metricas,
     obtener_vehiculos_con_bateria,
-    obtener_vehiculos_sin_bateria
+    obtener_vehiculos_sin_bateria,
+    buscar_bateria_por_id_db
 )
 
 @asynccontextmanager
@@ -236,25 +237,28 @@ async def actualizar_bateria_form(
     await actualizar_bateria_db(bateria_id, bateria_update, session)
     return RedirectResponse(url="/baterias_registro", status_code=303)
 
-@router.get("/baterias", response_class=HTMLResponse)
-async def mostrar_baterias(
-    request: Request,
-    session: AsyncSession = Depends(get_session),
-    asignada: Optional[str] = None
-):
-    query = select(Bateria).where(Bateria.eliminado == False)
-    if asignada == "true":
-        query = query.where(Bateria.vehiculo_id.is_not(None))
-    elif asignada == "false":
-        query = query.where(Bateria.vehiculo_id.is_(None))
-
-    result = await session.execute(query)
-    baterias = result.scalars().all()
+@router.get("/baterias", tags=["Baterías"])
+async def vista_baterias(request: Request, session: AsyncSession = Depends(get_session), asignada: Optional[str] = None, buscar_id: Optional[int] = None):
+    baterias = []
+    titulo = "Lista de Baterías"
+    if buscar_id:
+        bateria = await buscar_bateria_por_id_db(buscar_id, session)
+        if bateria:
+            baterias = [bateria]
+            titulo = f"Batería ID {buscar_id}"
+    else:
+        todas = await obtener_baterias_db(session)
+        if asignada == "true":
+            baterias = [b for b in todas if b.vehiculo_id is not None]
+        elif asignada == "false":
+            baterias = [b for b in todas if b.vehiculo_id is None]
+        else:
+            baterias = todas
 
     vehiculos_disponibles = await obtener_vehiculos_sin_bateria(session)
     return templates.TemplateResponse("baterias_registro.html", {
         "request": request,
-        "titulo": "Baterías registradas",
+        "titulo": titulo,
         "baterias": baterias,
         "asignada": asignada,
         "vehiculos_disponibles": vehiculos_disponibles
