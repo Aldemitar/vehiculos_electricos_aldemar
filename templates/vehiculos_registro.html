@@ -10,25 +10,42 @@
     <br>
 
     <div class="container">
-        <div class="table-responsive">
-            <div class="container mt-4 mb-4">
-                <form method="get" action="/vehiculos" class="d-flex justify-content-center align-items-center">
-                    <label for="marca" class="me-2 fw-bold">Filtrar por marca:</label>
-                    <select name="marca" id="marca" class="form-select w-auto me-2">
-                        <option value="">-- Seleccionar --</option>
-                        <option value="Tesla" {% if marca_seleccionada == 'Tesla' %}selected{% endif %}>Tesla</option>
-                        <option value="Nissan" {% if marca_seleccionada == 'Nissan' %}selected{% endif %}>Nissan</option>
-                        <option value="BMW" {% if marca_seleccionada == 'BMW' %}selected{% endif %}>BMW</option>
-                        <option value="Renault" {% if marca_seleccionada == 'Renault' %}selected{% endif %}>Renault</option>
-                        <option value="Chevrolet" {% if marca_seleccionada == 'Chevrolet' %}selected{% endif %}>Chevrolet</option>
-                    </select>
-                    <button type="submit" class="btn btn-secondary me-2">Filtrar</button>
-                    {% if marca_seleccionada %}
-                        <a href="/vehiculos" class="btn btn-outline-dark">Quitar filtro</a>
-                    {% endif %}
-                </form>
-            </div>
+        <div class="container mt-4 mb-4">
+            <div class="row g-3 justify-content-center">
+                <div class="col-md-6">
+                    <form method="get" action="/vehiculos_registro" class="d-flex justify-content-center align-items-center">
+                        <label for="marca" class="me-2 fw-bold">Filtrar por marca:</label>
+                        <select name="marca" id="marca" class="form-select w-auto me-2">
+                            <option value="">-- Seleccionar --</option>
+                            <option value="Tesla" {% if marca_seleccionada == 'Tesla' %}selected{% endif %}>Tesla</option>
+                            <option value="Nissan" {% if marca_seleccionada == 'Nissan' %}selected{% endif %}>Nissan</option>
+                            <option value="BMW" {% if marca_seleccionada == 'BMW' %}selected{% endif %}>BMW</option>
+                            <option value="Renault" {% if marca_seleccionada == 'Renault' %}selected{% endif %}>Renault</option>
+                            <option value="Chevrolet" {% if marca_seleccionada == 'Chevrolet' %}selected{% endif %}>Chevrolet</option>
+                        </select>
+                        <button type="submit" class="btn btn-secondary me-2">Filtrar</button>
+                        {% if marca_seleccionada %}
+                            <a href="/vehiculos_registro" class="btn btn-outline-dark">Quitar filtro</a>
+                        {% endif %}
+                    </form>
+                </div>
+                <div class="col-md-6">
+                    <form method="get" action="/vehiculos_registro" class="d-flex justify-content-center align-items-center">
+                        <label for="id" class="me-2 fw-bold">Buscar por ID:</label>
+                        <input type="number" min="1" name="id" id="id" class="form-control w-auto me-2" placeholder="Ej: 5" value="{{ id_buscado | default('') }}">
+                        <button type="submit" class="btn btn-primary me-2">Buscar</button>
+                        {% if id_buscado %}
+                            <a href="/vehiculos_registro" class="btn btn-outline-dark">Limpiar</a>
+                        {% endif %}
+                    </form>
+                </div>
 
+            </div>
+        </div>
+        {% if id_buscado %}
+            <p class="text-center fw-bold">Mostrando resultado para ID = {{ id_buscado }}</p>
+        {% endif %}
+        <div class="table-responsive">
             <table class="table table-striped table-hover table-bordered align-middle shadow-sm">
                 <thead class="table-dark text-center">
                     <tr>
@@ -55,7 +72,7 @@
                             {% endif %}
                         </td>
                         <td>
-                            <a href="/vehiculos/edit/{{ vehiculo.id }}" class="btn btn-warning btn-sm">
+                            <a href="/vehiculos/edit/{{ vehiculo.id }}" class="btn btn-warning btn-sm me-1">
                                 <i class="bi bi-pencil"></i> Actualizar
                             </a>
                             <form action="/vehiculos/delete/{{ vehiculo.id }}" method="POST" style="display:inline;" onsubmit="return confirmarYMostrarCargaEliminar(this)">
@@ -71,7 +88,7 @@
         </div>
 
         <div class="mb-4 text-center">
-            <a href="/vehiculos/add" class="btn btn-primary">
+            <a href="/vehiculos/add" class="btn btn-primary me-2">
                 <i class="bi bi-plus-lg"></i> Agregar Vehículo
             </a>
             <a href="/vehiculos_eliminados" class="btn btn-outline-secondary">
@@ -92,11 +109,9 @@
     function confirmarYMostrarCargaEliminar(formulario) {
         if (confirm('¿Estás seguro de eliminar este vehículo?')) {
             document.getElementById('pantallaCarga').style.display = 'block';
-
             const boton = formulario.querySelector('button[type="submit"]');
             boton.disabled = true;
             boton.innerText = 'Eliminando...';
-
             return true;
         } else {
             return false;
