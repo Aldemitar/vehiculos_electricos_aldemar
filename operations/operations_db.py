@@ -35,9 +35,9 @@ async def eliminar_vehiculo_db(vehiculo_id: int, session: AsyncSession):
     return {"mensaje": f"Vehículo con ID {vehiculo_id} marcado como eliminado."}
 
 async def filtrar_vehiculos_por_marca_db(marca: MarcaVehiculo, session: AsyncSession):
-    result = await session.execute(select(Vehiculo).where(Vehiculo.marca == marca))
-    vehiculos = result.scalars().all()
-    return vehiculos
+    query = select(Vehiculo).where(Vehiculo.marca == marca)
+    result = await session.execute(query)
+    return result.scalars().all()
 
 async def actualizar_vehiculo_db_form(vehiculo_id: int, vehiculo_update: VehiculoUpdateForm, session: AsyncSession):
     result = await session.execute(select(Vehiculo).where(Vehiculo.id == vehiculo_id))
