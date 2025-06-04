@@ -35,7 +35,8 @@ from operations.operations_db import (
     obtener_dashboard_metricas,
     obtener_vehiculos_con_bateria,
     obtener_vehiculos_sin_bateria,
-    buscar_bateria_por_id_db
+    buscar_bateria_por_id_db,
+    obtener_vehiculo_por_id
 )
 
 @asynccontextmanager
@@ -51,13 +52,28 @@ async def read_home(request: Request):
     return templates.TemplateResponse("home.html", {"request": request})
 
 @router.get("/vehiculos_registro", response_class=HTMLResponse, tags=["Vehículos"])
-async def vehiculos_html(request: Request, session: AsyncSession = Depends(get_session)):
-    vehiculos = await obtener_vehiculos_db(session)
+async def vehiculos_html(
+    request: Request,
+    session: AsyncSession = Depends(get_session),
+    id: int = None,
+    marca: str = None
+):
+    vehiculos = []
+    id_buscado = None
+    if id:
+        vehiculo = await obtener_vehiculo_por_id(session, id)
+        if vehiculo:
+            vehiculos = [vehiculo]
+            id_buscado = id
+    else:
+        vehiculos = await obtener_vehiculos_db(session)
 
     return templates.TemplateResponse("vehiculos_registro.html", {
         "request": request,
         "sesiones": vehiculos,
-        "titulo": "Vehículos registrados"
+        "titulo": "Vehículos registrados",
+        "marca_seleccionada": marca,
+        "id_buscado": id_buscado
     })
 
 @router.get("/vehiculos/add", response_class=HTMLResponse, tags=["Vehículos"])
@@ -235,12 +251,12 @@ async def actualizar_bateria_form(
     session: AsyncSession = Depends(get_session)
 ):
     await actualizar_bateria_db(bateria_id, bateria_update, session)
-    return RedirectResponse(url="/baterias_registro", status_code=303)
+    return RedirectResponse(url="/baterias", status_code=303)
 
 @router.get("/baterias", tags=["Baterías"])
 async def vista_baterias(request: Request, session: AsyncSession = Depends(get_session), asignada: Optional[str] = None, buscar_id: Optional[int] = None):
     baterias = []
-    titulo = "Lista de Baterías"
+    titulo = "Baterías registradas"
     if buscar_id:
         bateria = await buscar_bateria_por_id_db(buscar_id, session)
         if bateria:
