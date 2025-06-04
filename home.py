@@ -65,6 +65,8 @@ async def vehiculos_html(
         if vehiculo:
             vehiculos = [vehiculo]
             id_buscado = id
+    elif marca:
+        vehiculos = await filtrar_vehiculos_por_marca_db(marca, session)
     else:
         vehiculos = await obtener_vehiculos_db(session)
 
