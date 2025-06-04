@@ -153,3 +153,7 @@ async def obtener_vehiculos_sin_bateria(session: AsyncSession):
     )
     result = await session.execute(stmt)
     return result.scalars().all()
+
+async def buscar_bateria_por_id_db(bateria_id: int, session: AsyncSession) -> Optional[Bateria]:
+    result = await session.execute(select(Bateria).where(Bateria.id == bateria_id, Bateria.eliminado == False))
+    return result.scalar_one_or_none()
