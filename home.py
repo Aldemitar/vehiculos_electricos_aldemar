@@ -70,12 +70,15 @@ async def vehiculos_html(
     else:
         vehiculos = await obtener_vehiculos_db(session)
 
+    marcas = list(MarcaVehiculo) 
+
     return templates.TemplateResponse("vehiculos_registro.html", {
         "request": request,
         "sesiones": vehiculos,
         "titulo": "Vehículos registrados",
         "marca_seleccionada": marca,
-        "id_buscado": id_buscado
+        "id_buscado": id_buscado,
+        "marcas": marcas
     })
 
 @router.get("/vehiculos/add", response_class=HTMLResponse, tags=["Vehículos"])
