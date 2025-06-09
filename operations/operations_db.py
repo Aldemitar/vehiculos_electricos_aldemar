@@ -76,7 +76,7 @@ async def crear_bateria_db(bateria_create: BateriaCreateForm, session: AsyncSess
     return bateria
 
 async def obtener_baterias_db(session: AsyncSession) -> List[Bateria]:
-    result = await session.execute(select(Bateria).where(Bateria.eliminado == False))
+    result = await session.execute(select(Bateria).where(Bateria.eliminado == False).order_by(Bateria.id))
     return result.scalars().all()
 
 async def eliminar_bateria_db(bateria_id: int, session: AsyncSession):
