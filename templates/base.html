@@ -15,10 +15,10 @@
         }
     </style>
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 {% include 'includes/navbar.html' %}
 
-<main>
+<main class="flex-grow-1">
     {% block content %}{% endblock %}
 </main>
  {% include 'includes/footer.html' %}
