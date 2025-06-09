@@ -2,21 +2,21 @@
 {% block title %}Editar Vehículo{% endblock %}
 {% block content %}
 
-    <header class="bg-dark text-white py-5">
-        <div class="container text-center">
-            <h1 class="display-3 fw-bold mb-3">Actualización de vehículo</h1>
-        </div>
-    </header>
+<header class="bg-dark text-white py-5 shadow-sm">
+    <div class="container text-center">
+        <h1 class="display-3 fw-bold mb-3">Actualización de vehículo</h1>
+    </div>
+</header>
 
-    <div class="container my-5">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h2 class="card-title mb-4 text-primary text-center">Editar Vehículo con ID #{{ vehiculo.id }}</h2>
-
-                <form id="vehiculoEditForm" action="/vehiculos/update/{{ vehiculo.id }}" method="POST" enctype="multipart/form-data" onsubmit="mostrarCarga()">
-                    <div class="mb-3">
-                        <label for="marca" class="form-label">Marca</label>
-                        <select id="marca" name="marca" class="form-select" required>
+<div class="container my-5">
+    <div class="card shadow-lg border-0">
+        <div class="card-body px-4 py-5">
+            <h2 class="card-title mb-4 text-primary text-center fw-semibold">Editar Vehículo con ID #{{ vehiculo.id }}</h2>
+            <form id="vehiculoEditForm" action="/vehiculos/update/{{ vehiculo.id }}" method="POST" enctype="multipart/form-data" onsubmit="mostrarCarga()">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="marca" class="form-label fw-semibold">Marca</label>
+                        <select id="marca" name="marca" class="form-select form-select-lg" required>
                             {% for marca in marcas %}
                                 <option value="{{ marca.value }}" {% if marca.value == vehiculo.marca.value %}selected{% endif %}>
                                     {{ marca.value }}
@@ -25,35 +25,37 @@
                         </select>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="modelo" class="form-label">Modelo</label>
-                        <input type="text" id="modelo" name="modelo" class="form-control" value="{{ vehiculo.modelo }}" required>
+                    <div class="col-md-6">
+                        <label for="modelo" class="form-label fw-semibold">Modelo</label>
+                        <input type="text" id="modelo" name="modelo" class="form-control form-control-lg" value="{{ vehiculo.modelo }}" required>
                     </div>
-
-                    <div class="mb-4">
-                        <label for="año" class="form-label">Año</label>
-                        <input type="number" id="año" name="año" class="form-control" value="{{ vehiculo.año }}" required>
+                    <div class="col-md-6">
+                        <label for="año" class="form-label fw-semibold">Año</label>
+                        <input type="number" id="año" name="año" class="form-control form-control-lg" value="{{ vehiculo.año }}" required>
                     </div>
-                    
-                    <div class="mb-4">
-                        <label for="imagen" class="form-label">Imagen del Vehículo</label>
-                        <input type="file" id="imagen" name="imagen" class="form-control" accept="image/*">
+                    <div class="col-md-6">
+                        <label for="imagen" class="form-label fw-semibold">Imagen del Vehículo</label>
+                        <input type="file" id="imagen" name="imagen" class="form-control form-control-lg" accept="image/*">
                     </div>
-
-                    <div class="d-flex justify-content-between align-items-center">
-                        <button id="submitBtn" type="submit" class="btn btn-primary">Actualizar</button>
-                        <a href="/vehiculos_registro" class="btn btn-outline-secondary">Cancelar</a>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-5">
+                    <button id="submitBtn" type="submit" class="btn btn-primary btn-lg px-4">
+                        <i class="bi bi-save me-2"></i>Actualizar
+                    </button>
+                    <a href="/vehiculos_registro" class="btn btn-outline-secondary btn-lg px-4">
+                        <i class="bi bi-arrow-left me-2"></i>Cancelar
+                    </a>
+                </div>
+                <div id="pantallaCarga" class="text-center mt-5" style="display: none;">
+                    <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                        <span class="visually-hidden">Cargando...</span>
                     </div>
-                    <div id="pantallaCarga" class="text-center mt-4" style="display: none;">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Cargando...</span>
-                        </div>
-                        <p class="mt-2">Procesando, por favor espera...</p>
-                    </div>
-                </form>
-            </div>
+                    <p class="mt-3 fs-5">Procesando, por favor espera...</p>
+                </div>
+            </form>
         </div>
     </div>
+</div>
 
 <script>
     function mostrarCarga() {
