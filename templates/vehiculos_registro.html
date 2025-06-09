@@ -17,11 +17,11 @@
                         <label for="marca" class="me-2 fw-bold">Filtrar por marca:</label>
                         <select name="marca" id="marca" class="form-select w-auto me-2">
                             <option value="">-- Seleccionar --</option>
-                            <option value="Tesla" {% if marca_seleccionada == 'Tesla' %}selected{% endif %}>Tesla</option>
-                            <option value="Nissan" {% if marca_seleccionada == 'Nissan' %}selected{% endif %}>Nissan</option>
-                            <option value="BMW" {% if marca_seleccionada == 'BMW' %}selected{% endif %}>BMW</option>
-                            <option value="Renault" {% if marca_seleccionada == 'Renault' %}selected{% endif %}>Renault</option>
-                            <option value="Chevrolet" {% if marca_seleccionada == 'Chevrolet' %}selected{% endif %}>Chevrolet</option>
+                            {% for marca_enum in marcas %}
+                                <option value="{{ marca_enum.value }}" {% if marca_seleccionada == marca_enum.value %}selected{% endif %}>
+                                    {{ marca_enum.value }}
+                                </option>
+                            {% endfor %}
                         </select>
                         <button type="submit" class="btn btn-secondary me-2">Filtrar</button>
                         {% if marca_seleccionada %}
@@ -35,15 +35,16 @@
                         <input type="number" min="1" name="id" id="id" class="form-control w-auto me-2" placeholder="Ej: 5" value="{{ id_buscado | default('') }}">
                         <button type="submit" class="btn btn-primary me-2">Buscar</button>
                         {% if id_buscado %}
-                            <a href="/vehiculos_registro" class="btn btn-outline-dark">Limpiar</a>
+                            <a href="/vehiculos_registro" class="btn btn-outline-dark">Limpiar búsqueda</a>
                         {% endif %}
                     </form>
                 </div>
-
             </div>
         </div>
         {% if id_buscado %}
             <p class="text-center fw-bold">Mostrando resultado para ID = {{ id_buscado }}</p>
+        {% elif marca_seleccionada %}
+            <p class="text-center fw-bold">Mostrando resultados filtrados por marca: {{ marca_seleccionada }}</p>
         {% endif %}
         <div class="table-responsive">
             <table class="table table-striped table-hover table-bordered align-middle shadow-sm">
@@ -66,7 +67,7 @@
                         <td>{{ vehiculo.año }}</td>
                         <td>
                             {% if vehiculo.imagen_url %}
-                                <img src="{{ vehiculo.imagen_url }}" alt="Imagen de {{ vehiculo.modelo }}" style="width: 100px; height: auto; object-fit: contain;">
+                                <img src="{{ vehiculo.imagen_url }}" alt="Imagen de {{ vehiculo.modelo }}" style="width: 100px; height: auto; object-fit: contain; cursor: pointer;" onclick="mostrarImagenModal('{{ vehiculo.imagen_url }}')">
                             {% else %}
                                 Sin imagen
                             {% endif %}
@@ -86,7 +87,6 @@
                 </tbody>
             </table>
         </div>
-
         <div class="mb-4 text-center">
             <a href="/vehiculos/add" class="btn btn-primary me-2">
                 <i class="bi bi-plus-lg"></i> Agregar Vehículo
@@ -95,7 +95,6 @@
                 <i class="bi bi-archive"></i> Ver eliminados
             </a>
         </div>
-
         <div id="pantallaCarga" class="text-center mt-4" style="display: none;">
             <div class="spinner-border text-danger" role="status">
                 <span class="visually-hidden">Cargando...</span>
@@ -103,7 +102,15 @@
             <p class="mt-2">Eliminando vehículo, por favor espera...</p>
         </div>
     </div>
-    <br>
+    <div class="modal fade" id="imagenModal" tabindex="-1" aria-labelledby="imagenModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+        <div class="modal-body text-center">
+            <img id="imagenAmpliada" src="" alt="Imagen ampliada" class="img-fluid">
+        </div>
+        </div>
+    </div>
+    </div>
 
 <script>
     function confirmarYMostrarCargaEliminar(formulario) {
@@ -116,6 +123,13 @@
         } else {
             return false;
         }
+    }
+
+    function mostrarImagenModal(src) {
+        const imagen = document.getElementById('imagenAmpliada');
+        imagen.src = src;
+        const modal = new bootstrap.Modal(document.getElementById('imagenModal'));
+        modal.show();
     }
 </script>
 
