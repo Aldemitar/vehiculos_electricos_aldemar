@@ -20,7 +20,7 @@ async def crear_vehiculo_db(vehiculo_create, session: AsyncSession):
     return vehiculo
 
 async def obtener_vehiculos_db(session: AsyncSession) -> List[Vehiculo]:
-    result = await session.execute(select(Vehiculo).where(Vehiculo.eliminado == False))
+    result = await session.execute(select(Vehiculo).where(Vehiculo.eliminado == False).order_by(Vehiculo.id))
     return result.scalars().all()
 
 async def eliminar_vehiculo_db(vehiculo_id: int, session: AsyncSession):
@@ -35,7 +35,7 @@ async def eliminar_vehiculo_db(vehiculo_id: int, session: AsyncSession):
     return {"mensaje": f"Vehículo con ID {vehiculo_id} marcado como eliminado."}
 
 async def filtrar_vehiculos_por_marca_db(marca: MarcaVehiculo, session: AsyncSession):
-    query = select(Vehiculo).where(Vehiculo.marca == marca)
+    query = select(Vehiculo).where(Vehiculo.marca == marca,Vehiculo.eliminado == False).order_by(Vehiculo.id)
     result = await session.execute(query)
     return result.scalars().all()
 
