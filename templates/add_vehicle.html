@@ -2,51 +2,52 @@
 {% block title %} {{ titulo }} {% endblock %}
 {% block content %}
 
-    <header class="bg-dark text-white py-5">
+    <header class="bg-dark text-white py-5 shadow-sm">
         <div class="container text-center">
             <h1 class="display-3 fw-bold mb-3">{{ titulo }}</h1>
         </div>
     </header>
 
     <div class="container my-5">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h2 class="card-title mb-4 text-primary text-center">Añadir Nuevo Vehículo</h2>
-
+        <div class="card shadow-lg border-0">
+            <div class="card-body px-4 py-5">
+                <h2 class="card-title mb-4 text-primary text-center fw-semibold">Añadir Nuevo Vehículo</h2>
                 <form id="vehiculoForm" method="post" action="/vehiculos/add" enctype="multipart/form-data" onsubmit="mostrarCarga()">
-                    <div class="mb-3">
-                        <label for="marca" class="form-label">Marca</label>
-                        <select name="marca" id="marca" class="form-select" required>
-                            {% for marca in marcas %}
-                                <option value="{{ marca.value }}">{{ marca.value }}</option>
-                            {% endfor %}
-                        </select>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="marca" class="form-label fw-semibold">Marca</label>
+                            <select name="marca" id="marca" class="form-select form-select-lg" required>
+                                {% for marca in marcas %}
+                                    <option value="{{ marca.value }}">{{ marca.value }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="modelo" class="form-label fw-semibold">Modelo</label>
+                            <input type="text" id="modelo" name="modelo" class="form-control form-control-lg" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="año" class="form-label fw-semibold">Año</label>
+                            <input type="number" id="año" name="año" class="form-control form-control-lg" min="1900" max="2100" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="imagen" class="form-label fw-semibold">Imagen del Vehículo</label>
+                            <input type="file" id="imagen" name="imagen" class="form-control form-control-lg" accept="image/*">
+                        </div>
                     </div>
-
-                    <div class="mb-3">
-                        <label for="modelo" class="form-label">Modelo</label>
-                        <input type="text" id="modelo" name="modelo" class="form-control" required>
+                    <div class="d-flex justify-content-between align-items-center mt-5">
+                        <button id="submitBtn" type="submit" class="btn btn-success btn-lg px-4">
+                            <i class="bi bi-plus-lg me-2"></i>Crear Vehículo
+                        </button>
+                        <a href="/vehiculos_registro" class="btn btn-outline-secondary btn-lg px-4">
+                            <i class="bi bi-arrow-left me-2"></i>Cancelar
+                        </a>
                     </div>
-
-                    <div class="mb-4">
-                        <label for="año" class="form-label">Año</label>
-                        <input type="number" id="año" name="año" class="form-control" min="1900" max="2100" required>
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="imagen" class="form-label">Imagen del Vehículo</label>
-                        <input type="file" id="imagen" name="imagen" class="form-control" accept="image/*">
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <button id="submitBtn" type="submit" class="btn btn-primary">Crear Vehículo</button>
-                        <a href="/vehiculos_registro" class="btn btn-outline-secondary">Cancelar</a>
-                    </div>
-
-                    <div id="pantallaCarga" class="text-center mt-4" style="display: none;">
-                        <div class="spinner-border text-primary" role="status">
+                    <div id="pantallaCarga" class="text-center mt-5" style="display: none;">
+                        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
                             <span class="visually-hidden">Cargando...</span>
                         </div>
-                        <p class="mt-2">Procesando, por favor espera...</p>
+                        <p class="mt-3 fs-5">Procesando, por favor espera...</p>
                     </div>
                 </form>
             </div>
