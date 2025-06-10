@@ -13,7 +13,7 @@
     <div class="container">
 
         <div class="row mb-5">
-            <div class="col-md-4">
+            <div class="col-12 col-md-4 mb-3 mb-md-0">
                 <div class="card text-white bg-primary shadow">
                     <div class="card-body text-center">
                         <h5 class="card-title">Total Baterías</h5>
@@ -21,7 +21,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-12 col-md-4 mb-3 mb-md-0">
                 <div class="card text-white bg-success shadow">
                     <div class="card-body text-center">
                         <h5 class="card-title">Total Vehículos</h5>
@@ -29,7 +29,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-12 col-md-4">
                 <div class="card text-white bg-info shadow">
                     <div class="card-body text-center">
                         <h5 class="card-title">Promedio Salud (%)</h5>
@@ -41,69 +41,87 @@
 
         <div class="mb-5">
             <h4 class="text-center mb-3">1. Distribución de baterías asignadas</h4>
-            <div class="d-flex justify-content-center">
-                <canvas id="asignacionChart" width="400"></canvas>
+            <div class="d-flex justify-content-center w-100" style="max-width: 400px; margin-left: auto; margin-right: auto;">
+                <canvas id="asignacionChart" style="width: 100%; height: auto;" aria-label="Gráfico de distribución de baterías asignadas" role="img"></canvas>
             </div>
         </div>
 
         <div class="mb-5">
             <h4 class="text-center mb-3">2. Vehículos por marca</h4>
-            <div class="d-flex justify-content-center">
-                <canvas id="vehiculosChart" width="400"></canvas>
+            <div class="d-flex justify-content-center w-100" style="max-width: 400px; margin-left: auto; margin-right: auto;">
+                <canvas id="vehiculosChart" style="width: 100%; height: auto;" aria-label="Gráfico de barras de vehículos por marca" role="img"></canvas>
             </div>
         </div>
 
         <div class="mb-5">
             <h4 class="text-center mb-3">3. Estado de salud de baterías</h4>
-            <div class="d-flex justify-content-center">
-                <canvas id="saludChart" width="400"></canvas>
+            <div class="d-flex justify-content-center w-100" style="max-width: 400px; margin-left: auto; margin-right: auto;">
+                <canvas id="saludChart" style="width: 100%; height: auto;" aria-label="Gráfico circular de estado de salud de baterías" role="img"></canvas>
             </div>
         </div>
 
     </div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
+<script defer>
+document.addEventListener('DOMContentLoaded', function() {
+    const asignacionLabels = {{ asignacion_labels | tojson | default('[]') }};
+    const asignacionData = {{ asignacion_data | tojson | default('[]') }};
+    const marcasLabels = {{ marcas_labels | tojson | default('[]') }};
+    const marcasData = {{ marcas_data | tojson | default('[]') }};
+    const saludLabels = {{ salud_labels | tojson | default('[]') }};
+    const saludData = {{ salud_data | tojson | default('[]') }};
+
+    if (asignacionLabels.length && asignacionData.length) {
         new Chart(document.getElementById('asignacionChart').getContext('2d'), {
             type: 'doughnut',
             data: {
-                labels: {{ asignacion_labels | tojson }},
+                labels: asignacionLabels,
                 datasets: [{
                     label: 'Estado de Asignación',
-                    data: {{ asignacion_data | tojson }},
+                    data: asignacionData,
                     backgroundColor: ['#198754', '#dc3545']
                 }]
             }
         });
+    }
 
+    if (marcasLabels.length && marcasData.length) {
         new Chart(document.getElementById('vehiculosChart').getContext('2d'), {
             type: 'bar',
             data: {
-                labels: {{ marcas_labels | tojson }},
+                labels: marcasLabels,
                 datasets: [{
                     label: 'Vehículos por marca',
-                    data: {{ marcas_data | tojson }},
+                    data: marcasData,
                     backgroundColor: '#0d6efd'
                 }]
             },
             options: {
                 scales: {
-                    y: { beginAtZero: true, stepSize: 1 }
+                    y: {
+                        beginAtZero: true,
+                        stepSize: 1
+                    }
                 }
             }
         });
+    }
 
+    if (saludLabels.length && saludData.length) {
         new Chart(document.getElementById('saludChart').getContext('2d'), {
             type: 'pie',
             data: {
-                labels: {{ salud_labels | tojson }},
+                labels: saludLabels,
                 datasets: [{
                     label: 'Salud de Baterías',
-                    data: {{ salud_data | tojson }},
+                    data: saludData,
                     backgroundColor: ['#20c997', '#ffc107', '#dc3545']
                 }]
             }
         });
-    </script>
+    }
+});
+</script>
 
 {% endblock %}
