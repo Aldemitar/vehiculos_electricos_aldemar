@@ -12,3 +12,9 @@ class EstadoSaludBateria(str, Enum):
     BUENO = "Bueno"
     REGULAR = "Regular"
     MALO = "Malo"
+
+class RolUsuario(str, Enum):
+    ADMIN = "admin"
+    TECNICO = "tecnico"
+    OPERADOR = "operador"
+    VISOR = "visor" 
