@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %} Editar Usuario {% endblock %}
+{% block content %}
+
+<header class="bg-dark text-white py-5">
+    <div class="container text-center">
+        <h1 class="display-3 fw-bold mb-3">Editar Usuario</h1>
+    </div>
+</header>
+<br>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-body">
+                    <form action="/usuarios/update/{{ usuario.id }}" method="POST" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label fw-bold">Nombre:</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre" value="{{ usuario.nombre }}" required minlength="2" maxlength="50">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label fw-bold">Email:</label>
+                            <input type="email" class="form-control" id="email" name="email" value="{{ usuario.email }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="contraseña" class="form-label fw-bold">Nueva Contraseña (dejar vacío para mantener la actual):</label>
+                            <input type="password" class="form-control" id="contraseña" name="contraseña" minlength="6" placeholder="Opcional">
+                            <small class="form-text text-muted">Solo completa este campo si deseas cambiar la contraseña</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="rol" class="form-label fw-bold">Rol:</label>
+                            <select class="form-select" id="rol" name="rol" required>
+                                {% for rol in roles %}
+                                    <option value="{{ rol.value }}" {% if usuario.rol == rol %}selected{% endif %}>
+                                        {{ rol.value }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="activo" name="activo" {% if usuario.activo %}checked{% endif %}>
+                            <label class="form-check-label fw-bold" for="activo">Usuario Activo</label>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="/usuarios_registro" class="btn btn-secondary me-md-2">
+                                <i class="bi bi-arrow-left"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-warning">
+                                <i class="bi bi-save"></i> Actualizar Usuario
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %} {{ titulo }} {% endblock %}
+{% block content %}
+
+<header class="bg-danger text-white py-5">
+    <div class="container text-center">
+        <h1 class="display-3 fw-bold mb-3">{{ titulo }}</h1>
+    </div>
+</header>
+<br>
+
+<div class="container">
+    <div class="table-responsive">
+        <table class="table table-striped table-hover table-bordered align-middle shadow-sm">
+            <thead class="table-danger text-center">
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Email</th>
+                    <th>Rol</th>
+                    <th>Fecha Registro</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="text-center">
+                {% if sesiones %}
+                    {% for usuario in sesiones %}
+                    <tr>
+                        <td>{{ usuario.id }}</td>
+                        <td>{{ usuario.nombre }}</td>
+                        <td>{{ usuario.email }}</td>
+                        <td><span class="badge bg-info">{{ usuario.rol.value }}</span></td>
+                        <td>{{ usuario.fecha_registro.strftime('%d/%m/%Y') if usuario.fecha_registro else 'N/A' }}</td>
+                        <td>
+                            <form action="/usuarios/restaurar/{{ usuario.id }}" method="POST" style="display:inline;" onsubmit="return confirm('¿Deseas restaurar este usuario?')">
+                                <button type="submit" class="btn btn-success btn-sm">
+                                    <i class="bi bi-arrow-counterclockwise"></i> Restaurar
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">
+                            <i class="bi bi-inbox"></i> No hay usuarios eliminados
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+    <div class="mb-4 text-center">
+        <a href="/usuarios_registro" class="btn btn-primary">
+            <i class="bi bi-arrow-left"></i> Volver a Usuarios
+        </a>
+    </div>
+</div>
+
+{% endblock %}
