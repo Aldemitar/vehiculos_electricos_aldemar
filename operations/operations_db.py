@@ -4,13 +4,15 @@ from sqlalchemy import func
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from data.enums import MarcaVehiculo
-from data.models import Vehiculo, Bateria
-from data.schemas import VehiculoUpdateForm, BateriaCreateForm
+from data.enums import MarcaVehiculo, RolUsuario
+from data.models import Vehiculo, Bateria, Usuario
+from data.schemas import VehiculoUpdateForm, BateriaCreateForm, UsuarioCreateForm, UsuarioUpdateForm, UsuarioCreate
 
 from utils.supabase_db import save_file, supabase, SUPABASE_BUCKET, get_supabase_path_from_url
 
 from typing import List, Optional
+
+from passlib.context import CryptContext
 
 async def crear_vehiculo_db(vehiculo_create, session: AsyncSession):
     vehiculo = Vehiculo(**vehiculo_create.dict())
@@ -163,3 +165,165 @@ async def obtener_vehiculo_por_id(session: AsyncSession, vehiculo_id: int):
         select(Vehiculo).where(Vehiculo.id == vehiculo_id, Vehiculo.eliminado == False)
     )
     return result.scalar_one_or_none()
+
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
+from fastapi import HTTPException
+from typing import List, Optional
+import bcrypt
+
+# Función auxiliar para hashear contraseñas
+def hash_password(password: str) -> str:
+    """Hashea una contraseña usando bcrypt"""
+    salt = bcrypt.gensalt()
+    hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
+    return hashed.decode('utf-8')
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """Verifica si una contraseña coincide con el hash"""
+    return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
+
+# Operaciones CRUD para Usuarios
+
+async def crear_usuario_db(usuario_create: UsuarioCreate, session: AsyncSession):
+    usuario = Usuario(**usuario_create.dict())
+    session.add(usuario)
+    await session.commit()
+    await session.refresh(usuario)
+    return usuario
+
+async def obtener_usuarios_db(session: AsyncSession) -> List[Usuario]:
+    result = await session.execute(
+        select(Usuario).where(Usuario.eliminado == False).order_by(Usuario.id)
+    )
+    return result.scalars().all()
+
+async def obtener_usuario_por_id(session: AsyncSession, usuario_id: int) -> Optional[Usuario]:
+    result = await session.execute(
+        select(Usuario).where(Usuario.id == usuario_id, Usuario.eliminado == False)
+    )
+    return result.scalar_one_or_none()
+
+async def obtener_usuario_por_email(session: AsyncSession, email: str) -> Optional[Usuario]:
+    result = await session.execute(
+        select(Usuario).where(Usuario.email == email, Usuario.eliminado == False)
+    )
+    return result.scalar_one_or_none()
+
+async def filtrar_usuarios_por_rol_db(rol: str, session: AsyncSession) -> List[Usuario]:
+    try:
+        rol_enum = RolUsuario(rol)
+        result = await session.execute(
+            select(Usuario).where(
+                Usuario.rol == rol_enum,
+                Usuario.eliminado == False
+            ).order_by(Usuario.id)
+        )
+        return result.scalars().all()
+    except ValueError:
+        return []
+
+async def eliminar_usuario_db(usuario_id: int, session: AsyncSession):
+    result = await session.execute(select(Usuario).where(Usuario.id == usuario_id))
+    usuario = result.scalar_one_or_none()
+
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+    usuario.eliminado = True
+    await session.commit()
+    return {"message": "Usuario eliminado correctamente"}
+
+async def obtener_usuarios_eliminados_db(session: AsyncSession) -> List[Usuario]:
+    result = await session.execute(
+        select(Usuario).where(Usuario.eliminado == True).order_by(Usuario.id)
+    )
+    return result.scalars().all()
+
+async def restaurar_usuario_db(usuario_id: int, session: AsyncSession):
+    result = await session.execute(select(Usuario).where(Usuario.id == usuario_id))
+    usuario = result.scalar_one_or_none()
+    if not usuario or not usuario.eliminado:
+        raise HTTPException(
+            status_code=404, 
+            detail="Usuario no encontrado o ya está activo"
+        )
+    usuario.eliminado = False
+    await session.commit()
+    return {"message": "Usuario restaurado correctamente"}
+
+async def actualizar_usuario_db(usuario_id: int, usuario_data, session: AsyncSession):
+    result = await session.execute(select(Usuario).where(Usuario.id == usuario_id))
+    usuario = result.scalar_one_or_none()
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+    for field, value in usuario_data.dict(exclude_unset=True).items():
+        if value is not None:
+            if field == "contraseña" and value:
+                value = hash_password(value)
+            setattr(usuario, field, value)
+
+    await session.commit()
+    await session.refresh(usuario)
+    return usuario
+
+async def actualizar_usuario_db_form(usuario_id: int, usuario_update: UsuarioUpdateForm, session: AsyncSession):
+    result = await session.execute(select(Usuario).where(Usuario.id == usuario_id))
+    usuario = result.scalar_one_or_none()
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    if usuario_update.nombre:
+        usuario.nombre = usuario_update.nombre
+    if usuario_update.email:
+        existing = await obtener_usuario_por_email(session, usuario_update.email)
+        if existing and existing.id != usuario_id:
+            raise HTTPException(status_code=400, detail="El email ya está en uso")
+        usuario.email = usuario_update.email
+    if usuario_update.rol:
+        usuario.rol = usuario_update.rol
+    if usuario_update.contraseña and len(usuario_update.contraseña) > 0:
+        usuario.contraseña = hash_password(usuario_update.contraseña)
+    usuario.activo = usuario_update.activo if hasattr(usuario_update, 'activo') else usuario.activo
+
+    await session.commit()
+    await session.refresh(usuario)
+    return usuario
+
+async def toggle_usuario_activo_db(usuario_id: int, session: AsyncSession):
+    result = await session.execute(select(Usuario).where(Usuario.id == usuario_id))
+    usuario = result.scalar_one_or_none()
+    
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    
+    usuario.activo = not usuario.activo
+    await session.commit()
+    return {"message": f"Usuario {'activado' if usuario.activo else 'desactivado'} correctamente"}
+
+async def contar_usuarios_por_rol(session: AsyncSession) -> dict:
+    result = await session.execute(
+        select(Usuario).where(Usuario.eliminado == False)
+    )
+    usuarios = result.scalars().all()
+    
+    conteo = {}
+    for usuario in usuarios:
+        rol_nombre = usuario.rol.value
+        conteo[rol_nombre] = conteo.get(rol_nombre, 0) + 1
+    
+    return conteo
+
+async def verificar_credenciales(email: str, password: str, session: AsyncSession) -> Optional[Usuario]:
+    usuario = await obtener_usuario_por_email(session, email)
+    
+    if not usuario:
+        return None
+    
+    if not usuario.activo:
+        raise HTTPException(status_code=403, detail="Usuario inactivo")
+    
+    if verify_password(password, usuario.contraseña):
+        return usuario
+    
+    return None
