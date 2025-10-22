@@ -1,7 +1,8 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from fastapi import Form, UploadFile, File
-from data.models import MarcaVehiculo
+from data.models import MarcaVehiculo, RolUsuario
 from typing import Optional
+from datetime import date
 
 class VehiculoBase(BaseModel):
     marca: MarcaVehiculo
@@ -28,7 +29,7 @@ class VehiculoCreateForm:
 class VehiculoRead(VehiculoBase):
     id: int
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class VehiculoUpdateForm:
     def __init__(
@@ -52,7 +53,7 @@ class BateriaRead(BaseModel):
     vehiculo_id: Optional[int]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class BateriaCreateForm:
     def __init__(
@@ -87,3 +88,69 @@ class BateriaUpdateForm:
         return {
             k: v for k, v in self.__dict__.items() if v is not None
         }
+
+class UsuarioBase(BaseModel):
+    nombre: str
+    email: EmailStr
+    rol: RolUsuario
+
+class UsuarioCreate(UsuarioBase):
+    contraseña: str
+    activo: bool = True
+
+class UsuarioUpdate(BaseModel):
+    nombre: Optional[str] = None
+    email: Optional[EmailStr] = None
+    contraseña: Optional[str] = None
+    rol: Optional[RolUsuario] = None
+    activo: Optional[bool] = None
+
+class UsuarioResponse(UsuarioBase):
+    id: int
+    activo: bool
+    eliminado: bool
+    fecha_registro: date
+
+    class Config:
+        from_attributes = True
+
+class UsuarioCreateForm:
+    def __init__(
+        self,
+        nombre: str = Form(..., min_length=2, max_length=50),
+        email: EmailStr = Form(...),
+        contraseña: str = Form(..., min_length=6),
+        rol: RolUsuario = Form(...),
+        activo: bool = Form(True)
+    ):
+        self.nombre = nombre
+        self.email = email
+        self.contraseña = contraseña
+        self.rol = rol
+        self.activo = activo
+
+class UsuarioUpdateForm:
+    def __init__(
+        self,
+        nombre: str = Form(..., min_length=2, max_length=50),
+        email: EmailStr = Form(...),
+        contraseña: Optional[str] = Form(None),
+        rol: RolUsuario = Form(...),
+        activo: bool = Form(False)
+    ):
+        self.nombre = nombre
+        self.email = email
+        self.contraseña = contraseña if contraseña and len(contraseña) > 0 else None
+        self.rol = rol
+        self.activo = activo
+    
+    def dict(self, exclude_unset=False):
+        data = {
+            "nombre": self.nombre,
+            "email": self.email,
+            "rol": self.rol,
+            "activo": self.activo
+        }
+        if self.contraseña:
+            data["contraseña"] = self.contraseña
+        return data
