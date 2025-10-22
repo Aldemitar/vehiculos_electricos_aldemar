@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block title %}Dashboard Administrador{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+    <h2 class="fw-bold">Panel de Administración</h2>
+    <div>
+      <span class="me-3 text-muted">Bienvenido, {{ user.nombre }}</span>
+      <a href="/logout" class="btn btn-outline-danger btn-sm">Cerrar sesión</a>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0">
+        <div class="card-body text-center">
+          <h5 class="card-title text-muted">Vehículos Registrados</h5>
+          <h2 class="fw-bold text-primary">{{ total_vehiculos }}</h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0">
+        <div class="card-body text-center">
+          <h5 class="card-title text-muted">Baterías Disponibles</h5>
+          <h2 class="fw-bold text-success">{{ total_baterias }}</h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0">
+        <div class="card-body text-center">
+          <h5 class="card-title text-muted">Usuarios Activos</h5>
+          <h2 class="fw-bold text-info">{{ total_usuarios }}</h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0">
+        <div class="card-body text-center">
+          <h5 class="card-title text-muted">Asociaciones Activas</h5>
+          <h2 class="fw-bold text-warning">{{ total_asociaciones }}</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-3 col-lg-2">
+      <div class="list-group shadow-sm">
+        <a href="/vehiculos_registro" class="list-group-item list-group-item-action">
+          🚗 Gestionar Vehículos
+        </a>
+        <a href="/baterias" class="list-group-item list-group-item-action">
+          🔋 Gestionar Baterías
+        </a>
+        <a href="/usuarios_registro" class="list-group-item list-group-item-action">
+          👤 Gestionar Usuarios
+        </a>
+        <a href="/estadisticas" class="list-group-item list-group-item-action">
+          📊 Estadísticas
+        </a>
+      </div>
+    </div>
+
+    <div class="col-md-9 col-lg-10">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-primary text-white fw-semibold">
+          Resumen del Sistema
+        </div>
+        <div class="card-body">
+          <p>
+            Aquí puedes gestionar todas las entidades del sistema:
+            vehículos eléctricos, baterías, usuarios y asociaciones entre ellos.
+          </p>
+
+          <div class="table-responsive">
+            <table class="table table-hover align-middle">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Entidad</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>Vehículos</td>
+                  <td>
+                    <a href="/vehiculos_registro" class="btn btn-sm btn-outline-primary">Ver</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>Baterías</td>
+                  <td>
+                    <a href="/baterias" class="btn btn-sm btn-outline-primary">Ver</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>Usuarios</td>
+                  <td>
+                    <a href="/usuarios_registro" class="btn btn-sm btn-outline-primary">Ver</a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
