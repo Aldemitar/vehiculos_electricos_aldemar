@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center vh-100">
+  <div class="card shadow-lg p-4" style="width: 400px; border-radius: 15px;">
+    <h3 class="text-center mb-3">🔑 Iniciar sesión</h3>
+
+    {% if error %}
+    <div class="alert alert-danger text-center" role="alert">
+      {{ error }}
+    </div>
+    {% endif %}
+
+    <form method="post" action="/login">
+      <div class="mb-3">
+        <label for="email" class="form-label">Correo electrónico</label>
+        <input
+          type="email"
+          class="form-control"
+          id="email"
+          name="email"
+          placeholder="tuemail@correo.com"
+          required
+        />
+      </div>
+
+      <div class="mb-3">
+        <label for="contraseña" class="form-label">Contraseña</label>
+        <input
+          type="password"
+          class="form-control"
+          id="contraseña"
+          name="contraseña"
+          placeholder="********"
+          required
+        />
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100 mt-2">
+        Ingresar
+      </button>
+    </form>
+
+    <div class="text-center mt-3">
+      <small class="text-muted">© 2025 Vehículos Eléctricos</small>
+    </div>
+  </div>
+</div>
+{% endblock %}
