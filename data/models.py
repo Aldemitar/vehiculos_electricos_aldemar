@@ -1,9 +1,9 @@
 from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional
-from data.enums import MarcaVehiculo
-from pydantic import validator
+from data.enums import MarcaVehiculo, RolUsuario
+from pydantic import validator, EmailStr
 from datetime import date
-from sqlalchemy import Column, Boolean
+from sqlalchemy import Column, Boolean, Enum
 
 class Vehiculo(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -29,4 +29,25 @@ class Bateria(SQLModel, table=True):
     def validar_estado_salud(cls, v):
         if not 0 <= v <= 100:
             raise ValueError("El estado de salud debe estar entre 0 y 100.")
+        return v
+
+class Usuario(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    nombre: str = Field(index=True, min_length=2, max_length=50)
+    email: EmailStr = Field(unique=True, index=True)
+    contraseña: str = Field(min_length=6)
+    rol: RolUsuario = Field(sa_column=Column(Enum(RolUsuario), nullable=False))
+    fecha_registro: date = Field(default_factory=date.today)
+    activo: bool = Field(default=True, sa_column=Column(Boolean, default=True))
+    eliminado: bool = Field(default=False, sa_column=Column(Boolean, default=False))
+    @validator("contraseña")
+    def validar_contraseña(cls, v):
+        if len(v) < 6:
+            raise ValueError("La contraseña debe tener al menos 6 caracteres.")
+        return v
+
+    @validator("nombre")
+    def validar_nombre(cls, v):
+        if not v.isalpha() and " " not in v:
+            raise ValueError("El nombre solo puede contener letras y espacios.")
         return v
