@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 from fastapi import APIRouter, Request, Form, Depends, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
+from fastapi.security import OAuth2PasswordRequestForm
 import pandas as pd
 
 from data.schemas import VehiculoCreate, VehiculoRead, VehiculoCreateForm
@@ -9,9 +10,10 @@ from operations.operations_db import crear_vehiculo_db
 
 from utils.connection_db import init_db, get_session
 from utils.supabase_db import save_file
+from utils.auth import require_roles, hash_password, verify_password, create_access_token, get_user_by_email, hash_password, get_current_user
 
-from data.models import Vehiculo, Bateria
-from data.schemas import VehiculoCreateForm, VehiculoRead, VehiculoCreate, VehiculoUpdateForm, BateriaCreateForm, BateriaRead, BateriaUpdateForm
+from data.models import Vehiculo, Bateria, Usuario, RolUsuario
+from data.schemas import VehiculoCreateForm, VehiculoRead, VehiculoCreate, VehiculoUpdateForm, BateriaCreateForm, BateriaRead, BateriaUpdateForm, UsuarioCreate, UsuarioCreateForm, UsuarioUpdateForm
 from data.enums import MarcaVehiculo
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -36,7 +38,13 @@ from operations.operations_db import (
     obtener_vehiculos_con_bateria,
     obtener_vehiculos_sin_bateria,
     buscar_bateria_por_id_db,
-    obtener_vehiculo_por_id
+    obtener_vehiculo_por_id,
+    actualizar_usuario_db_form,
+    eliminar_usuario_db,
+    crear_usuario_db,
+    obtener_usuario_por_id,
+    obtener_usuarios_db,
+    filtrar_usuarios_por_rol_db
 )
 
 @asynccontextmanager
@@ -370,3 +378,259 @@ async def ver_desarrollador(request: Request):
 @router.get("/objetivo", response_class=HTMLResponse)
 async def ver_desarrollador(request: Request):
     return templates.TemplateResponse("objetivos.html", {"request": request})
+
+@router.get("/login", response_class=HTMLResponse)
+async def login_get(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request, "titulo": "Iniciar sesión"})
+
+@router.post("/login", response_class=HTMLResponse)
+async def login_post(
+    request: Request,
+    email: str = Form(...),
+    contraseña: str = Form(...),
+    session: AsyncSession = Depends(get_session)
+):
+    try:
+        result = await session.exec(
+            select(Usuario).where(Usuario.email == email, Usuario.eliminado == False)
+        )
+        user = result.scalar_one_or_none()
+
+        if not user or not verify_password(contraseña, user.contraseña):
+            return templates.TemplateResponse(
+                "login.html",
+                {
+                    "request": request,
+                    "error": "⚠️ Correo o contraseña incorrectos.",
+                    "titulo": "Iniciar sesión"
+                },
+                status_code=status.HTTP_401_UNAUTHORIZED
+            )
+        token = create_access_token({"sub": user.email, "rol": user.rol})
+
+        redirect_url = "/admin/dashboard" if user.rol == RolUsuario.ADMIN else "/"
+
+        response = RedirectResponse(url=redirect_url, status_code=status.HTTP_302_FOUND)
+        response.set_cookie(
+            key="access_token",
+            value=f"Bearer {token}",
+            httponly=True,
+            max_age=60 * 60,
+            samesite="lax"
+        )
+        return response
+
+    except Exception as e:
+        print(f"Error en login: {e}")
+        return templates.TemplateResponse(
+            "login.html",
+            {
+                "request": request,
+                "error": "Ocurrió un error inesperado. Intenta nuevamente.",
+                "titulo": "Iniciar sesión"
+            },
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+@router.post("/token")
+async def token(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    session: AsyncSession = Depends(get_session)
+):
+    result = await session.exec(select(Usuario).where(Usuario.email == form_data.username))
+    user = result.first()
+
+    if not user or not verify_password(form_data.password, user.contraseña):
+        return JSONResponse({"detail": "Credenciales incorrectas"}, status_code=status.HTTP_401_UNAUTHORIZED)
+
+    token = create_access_token({"sub": user.email, "rol": user.rol})
+    return {"access_token": token, "token_type": "bearer"}
+
+@router.get("/logout")
+async def logout():
+    resp = RedirectResponse(url="/login", status_code=status.HTTP_302_FOUND)
+    resp.delete_cookie("access_token")
+    return resp
+
+@router.get("/usuarios_registro", response_class=HTMLResponse, tags=["Usuarios"])
+async def usuarios_html(
+    request: Request,
+    session: AsyncSession = Depends(get_session),
+    id: int = None,
+    rol: str = None
+):
+    usuarios = []
+    id_buscado = None
+    if id:
+        usuario = await obtener_usuario_por_id(session, id)
+        if usuario:
+            usuarios = [usuario]
+            id_buscado = id
+    elif rol:
+        usuarios = await filtrar_usuarios_por_rol_db(rol, session)
+    else:
+        usuarios = await obtener_usuarios_db(session)
+
+    roles = list(RolUsuario) 
+
+    return templates.TemplateResponse("usuarios_registro.html", {
+        "request": request,
+        "sesiones": usuarios,
+        "titulo": "Usuarios registrados",
+        "rol_seleccionado": rol,
+        "id_buscado": id_buscado,
+        "roles": roles
+    })
+
+@router.get("/usuarios/add", response_class=HTMLResponse, tags=["Usuarios"])
+async def show_usuario_form(request: Request):
+    return templates.TemplateResponse("add_usuario.html", {
+        "request": request, 
+        "roles": list(RolUsuario), 
+        "titulo": "Creación usuario"
+    })
+
+@router.post("/usuarios/add", status_code=status.HTTP_303_SEE_OTHER, tags=["Usuarios"])
+async def submit_usuario_form(
+    usuario_form: UsuarioCreateForm = Depends(),
+    session: AsyncSession = Depends(get_session)
+):
+    contraseña_hasheada = hash_password(usuario_form.contraseña)
+    
+    usuario_create = UsuarioCreate(
+        nombre=usuario_form.nombre,
+        email=usuario_form.email,
+        contraseña=contraseña_hasheada,
+        rol=usuario_form.rol,
+        activo=usuario_form.activo if hasattr(usuario_form, 'activo') else True
+    )
+    await crear_usuario_db(usuario_create, session)
+    return RedirectResponse(url="/usuarios_registro", status_code=status.HTTP_303_SEE_OTHER)
+
+@router.delete("/usuarios/{usuario_id}", tags=["Usuarios"])
+async def eliminar_usuario(usuario_id: int, session: AsyncSession = Depends(get_session)):
+    return await eliminar_usuario_db(usuario_id, session)
+
+@router.post("/usuarios/delete/{usuario_id}", tags=["Usuarios"])
+async def eliminar_usuario_form(usuario_id: int, session: AsyncSession = Depends(get_session)):
+    await eliminar_usuario_db(usuario_id, session)
+    return RedirectResponse(url="/usuarios_registro", status_code=status.HTTP_303_SEE_OTHER)
+
+@router.get("/usuarios_eliminados", response_class=HTMLResponse, tags=["Usuarios"])
+async def usuarios_eliminados_html(request: Request, session: AsyncSession = Depends(get_session)):
+    result = await session.execute(select(Usuario).where(Usuario.eliminado == True))
+    usuarios = result.scalars().all()
+    return templates.TemplateResponse("usuarios_eliminados.html", {
+        "request": request,
+        "sesiones": usuarios,
+        "titulo": "Usuarios eliminados"
+    })
+
+@router.post("/usuarios/restaurar/{usuario_id}", tags=["Usuarios"])
+async def restaurar_usuario(usuario_id: int, session: AsyncSession = Depends(get_session)):
+    result = await session.execute(select(Usuario).where(Usuario.id == usuario_id))
+    usuario = result.scalar_one_or_none()
+
+    if usuario is None or usuario.eliminado is False:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado o ya está activo.")
+
+    usuario.eliminado = False
+    await session.commit()
+    return RedirectResponse(url="/usuarios_registro", status_code=status.HTTP_303_SEE_OTHER)
+
+@router.get("/usuarios/edit/{usuario_id}", tags=["Usuarios"])
+async def editar_usuario_form(request: Request, usuario_id: int, session: AsyncSession = Depends(get_session)):
+    result = await session.execute(select(Usuario).where(Usuario.id == usuario_id))
+    usuario = result.scalar_one_or_none()
+    if usuario is None:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+    return templates.TemplateResponse("edit_usuario.html",{
+            "request": request,
+            "usuario": usuario,
+            "roles": RolUsuario
+        }
+    )
+
+@router.post("/usuarios/update/{usuario_id}", tags=["Usuarios"])
+async def actualizar_usuario_post(
+    usuario_id: int,
+    usuario_update: UsuarioUpdateForm = Depends(),
+    session: AsyncSession = Depends(get_session)
+):
+    usuario = await actualizar_usuario_db_form(usuario_id, usuario_update, session)
+    return RedirectResponse(url="/usuarios_registro", status_code=status.HTTP_303_SEE_OTHER)
+
+@router.post("/usuarios/toggle_activo/{usuario_id}", tags=["Usuarios"])
+async def toggle_usuario_activo(usuario_id: int, session: AsyncSession = Depends(get_session)):
+    result = await session.execute(select(Usuario).where(Usuario.id == usuario_id))
+    usuario = result.scalar_one_or_none()
+    
+    if usuario is None:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    
+    usuario.activo = not usuario.activo
+    await session.commit()
+    return RedirectResponse(url="/usuarios_registro", status_code=status.HTTP_303_SEE_OTHER)
+
+@router.get("/admin/dashboard", response_class=HTMLResponse)
+async def admin_dashboard(
+    request: Request,
+    session: AsyncSession = Depends(get_session),
+    user: Usuario = Depends(get_current_user)
+):
+    if user.rol != "admin":
+        return RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
+
+    vehiculos_result = await session.execute(select(Vehiculo).where(Vehiculo.eliminado == False))
+    baterias_result = await session.execute(select(Bateria).where(Bateria.eliminado == False))
+    usuarios_result = await session.execute(select(Usuario).where(Usuario.eliminado == False))
+
+    vehiculos = vehiculos_result.scalars().all()
+    baterias = baterias_result.scalars().all()
+    usuarios = usuarios_result.scalars().all()
+
+    total_vehiculos = len(vehiculos)
+    total_baterias = len(baterias)
+    total_usuarios = len(usuarios)
+    baterias_asignadas = sum(1 for b in baterias if b.vehiculo_id)
+    baterias_no_asignadas = total_baterias - baterias_asignadas
+
+    avg_salud = round(sum(b.estado_salud for b in baterias) / total_baterias, 2) if total_baterias > 0 else 0
+
+    rol_counts = {"admin": 0, "tecnico": 0, "usuario": 0}
+    for u in usuarios:
+        if u.rol in rol_counts:
+            rol_counts[u.rol] += 1
+
+    marca_counts = {}
+    for v in vehiculos:
+        marca_counts[v.marca] = marca_counts.get(v.marca, 0) + 1
+
+    asignacion_labels = ["Asignadas", "No asignadas"]
+    asignacion_data = [baterias_asignadas, baterias_no_asignadas]
+
+    marcas_labels = list(marca_counts.keys())
+    marcas_data = list(marca_counts.values())
+
+    roles_labels = list(rol_counts.keys())
+    roles_data = list(rol_counts.values())
+
+    return templates.TemplateResponse(
+        "dashboard_admin.html",
+        {
+            "request": request,
+            "titulo": "Panel de Administración",
+            "user": user,
+            "total_vehiculos": total_vehiculos,
+            "total_baterias": total_baterias,
+            "total_usuarios": total_usuarios,
+            "avg_salud": avg_salud,
+            "asignacion_labels": asignacion_labels,
+            "asignacion_data": asignacion_data,
+            "marcas_labels": marcas_labels,
+            "marcas_data": marcas_data,
+            "roles_labels": roles_labels,
+            "roles_data": roles_data,
+        }
+    )
