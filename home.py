@@ -408,7 +408,13 @@ async def login_post(
             )
         token = create_access_token({"sub": user.email, "rol": user.rol})
 
-        redirect_url = "/admin/dashboard" if user.rol == RolUsuario.ADMIN else "/"
+        if user.rol == RolUsuario.ADMIN:
+            redirect_url = "/admin/dashboard"
+        elif user.rol == RolUsuario.TECNICO:
+            redirect_url = "/tecnico/dashboard"
+        else:
+            redirect_url = "/"
+
 
         response = RedirectResponse(url=redirect_url, status_code=status.HTTP_302_FOUND)
         response.set_cookie(
@@ -632,5 +638,39 @@ async def admin_dashboard(
             "marcas_data": marcas_data,
             "roles_labels": roles_labels,
             "roles_data": roles_data,
+        }
+    )
+
+@router.get("/tecnico/dashboard", response_class=HTMLResponse)
+async def tecnico_dashboard(
+    request: Request,
+    session: AsyncSession = Depends(get_session),
+    user: Usuario = Depends(get_current_user)
+):
+    if user.rol != "tecnico":
+        return RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
+
+    baterias_result = await session.execute(select(Bateria).where(Bateria.eliminado == False))
+    vehiculos_result = await session.execute(select(Vehiculo).where(Vehiculo.eliminado == False))
+    baterias = baterias_result.scalars().all()
+    vehiculos = vehiculos_result.scalars().all()
+
+    total_baterias = len(baterias)
+    total_vehiculos = len(vehiculos)
+    baterias_asignadas = sum(1 for b in baterias if b.vehiculo_id)
+    baterias_no_asignadas = total_baterias - baterias_asignadas
+    promedio_salud = round(sum(b.estado_salud for b in baterias) / total_baterias, 2) if total_baterias > 0 else 0
+
+    return templates.TemplateResponse(
+        "dashboard_tecnico.html",
+        {
+            "request": request,
+            "titulo": "Panel del Técnico",
+            "user": user,
+            "total_baterias": total_baterias,
+            "total_vehiculos": total_vehiculos,
+            "baterias_asignadas": baterias_asignadas,
+            "baterias_no_asignadas": baterias_no_asignadas,
+            "promedio_salud": promedio_salud,
         }
     )
