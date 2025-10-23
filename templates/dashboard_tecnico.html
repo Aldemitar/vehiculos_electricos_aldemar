@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Dashboard Técnico{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+    <h2 class="fw-bold">Panel del Técnico</h2>
+    <div>
+      <span class="me-3 text-muted">👷 Bienvenido, {{ user.nombre }}</span>
+      <a href="/logout" class="btn btn-outline-danger btn-sm">Cerrar sesión</a>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0 text-center">
+        <div class="card-body">
+          <h6 class="text-muted">Vehículos en Sistema</h6>
+          <h2 class="fw-bold text-primary">{{ total_vehiculos }}</h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0 text-center">
+        <div class="card-body">
+          <h6 class="text-muted">Baterías Registradas</h6>
+          <h2 class="fw-bold text-success">{{ total_baterias }}</h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0 text-center">
+        <div class="card-body">
+          <h6 class="text-muted">Baterías Asignadas</h6>
+          <h2 class="fw-bold text-info">{{ baterias_asignadas }}</h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0 text-center">
+        <div class="card-body">
+          <h6 class="text-muted">Promedio de Salud (%)</h6>
+          <h2 class="fw-bold text-warning">{{ promedio_salud }}</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-3 col-lg-2">
+      <div class="list-group shadow-sm">
+        <a href="/baterias" class="list-group-item list-group-item-action">
+          🔋 Ver Baterías
+        </a>
+        <a href="/vehiculos_registro" class="list-group-item list-group-item-action">
+          🚗 Ver Vehículos
+        </a>
+        <a href="/estadisticas" class="list-group-item list-group-item-action">
+          📈 Estadísticas
+        </a>
+      </div>
+    </div>
+
+    <div class="col-md-9 col-lg-10">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-primary text-white fw-semibold">
+          Resumen Técnico
+        </div>
+        <div class="card-body">
+          <p>
+            Desde este panel puedes visualizar el estado general de las baterías y vehículos,
+            así como acceder a las herramientas de diagnóstico y mantenimiento.
+          </p>
+          <ul>
+            <li>Ver todas las baterías y su estado de salud</li>
+            <li>Consultar vehículos registrados</li>
+            <li>Supervisar asignaciones y estado general del sistema</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
